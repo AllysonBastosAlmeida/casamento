@@ -14,6 +14,21 @@ const petals = Array.from({ length: 20 }, (_, index) => ({
   size: 8 + (index % 5) * 2,
   drift: -45 + (index % 7) * 15,
 }));
+const confetti = Array.from({ length: 46 }, (_, index) => ({
+  id: index,
+  left: (index * 47 + 9) % 100,
+  delay: (index % 12) * 0.045,
+  duration: 1.8 + (index % 7) * 0.12,
+  drift: -90 + (index % 10) * 20,
+  rotation: 180 + (index % 8) * 75,
+}));
+
+function ConfirmationCelebration({ onClose }) {
+  return <div className="confirmation-celebration" role="status" aria-live="polite">
+    <div className="confetti-layer" aria-hidden="true">{confetti.map(piece => <i key={piece.id} style={{ '--confetti-left': `${piece.left}%`, '--confetti-delay': `${piece.delay}s`, '--confetti-duration': `${piece.duration}s`, '--confetti-drift': `${piece.drift}px`, '--confetti-rotation': `${piece.rotation}deg` }} />)}</div>
+    <div className="celebration-card"><span className="celebration-icon"><Check /></span><p className="eyebrow">Presença confirmada</p><h2>Que alegria ter você conosco!</h2><p>Sua resposta foi registrada. Nos vemos no nosso grande dia!</p><button type="button" className="button primary" onClick={onClose}>Continuar</button></div>
+  </div>;
+}
 
 function Countdown() {
   const calculate = () => Math.max(0, new Date(wedding.date).getTime() - Date.now());
@@ -44,22 +59,29 @@ function FloralCorner({ className }) {
 
 function RsvpForm() {
   const [status, setStatus] = useState('');
+  const [celebrating, setCelebrating] = useState(false);
   const [attending, setAttending] = useState('sim');
   const [adults, setAdults] = useState(1);
   const updateCompanions = event => {
     const companionCount = event.currentTarget.value.split('\n').filter(name => name.trim()).length;
     setAdults(Math.min(10, 1 + companionCount));
   };
+  useEffect(() => {
+    if (!celebrating) return undefined;
+    const timer = window.setTimeout(() => setCelebrating(false), 5200);
+    return () => window.clearTimeout(timer);
+  }, [celebrating]);
   const onSubmit = async (event) => {
     event.preventDefault(); setStatus('loading');
     const formElement = event.currentTarget;
     const form = new FormData(formElement);
     try {
       await submitRsvp(Object.fromEntries(form));
-      formElement.reset(); setAttending('sim'); setAdults(1); setStatus('success');
+      const confirmed = attending === 'sim';
+      formElement.reset(); setAttending('sim'); setAdults(1); setStatus('success'); setCelebrating(confirmed);
     } catch (error) { setStatus(error.message || 'Não foi possível enviar. Tente novamente.'); }
   };
-  return <form className="form-card" onSubmit={onSubmit}>
+  return <><form className="form-card" onSubmit={onSubmit}>
     <label>Nome completo<input required name="name" autoComplete="name" /></label>
     <fieldset><legend>Você estará conosco?</legend><div className="choice-row">
       <label><input type="radio" name="attending" value="sim" checked={attending === 'sim'} onChange={() => setAttending('sim')} /> Sim, estarei</label>
@@ -73,9 +95,9 @@ function RsvpForm() {
     <label>WhatsApp<input required name="phone" inputMode="tel" autoComplete="tel" placeholder="(13) 99999-9999" /><small className="field-help">Usaremos o número para manter apenas sua resposta mais recente.</small></label>
     <label>Observações<textarea name="notes" /></label>
     <button className="button primary" disabled={status === 'loading'}>{status === 'loading' ? 'Enviando...' : 'Confirmar resposta'} <Check size={18} /></button>
-    {status === 'success' && <p className="form-success" role="status">Resposta registrada com carinho. Obrigado! Se responder novamente com o mesmo WhatsApp, manteremos a resposta mais recente.</p>}
+    {status === 'success' && !celebrating && <p className="form-success" role="status">Resposta registrada com carinho. Obrigado! Se responder novamente com o mesmo WhatsApp, manteremos a resposta mais recente.</p>}
     {status && !['loading', 'success'].includes(status) && <p className="form-error" role="alert">{status}</p>}
-  </form>;
+  </form>{celebrating && <ConfirmationCelebration onClose={() => setCelebrating(false)} />}</>;
 }
 
 export default function WeddingSite() {
