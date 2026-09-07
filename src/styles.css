@@ -65,6 +65,7 @@ h2 { color: var(--ink); font-size: clamp(2.25rem,5vw,4.2rem); line-height: 1.05;
 .ceremony-card>svg { color: var(--gold); margin-bottom: 20px; }
 .ceremony-card strong { color: var(--green); display: block; font-size: .78rem; letter-spacing: .15em; margin-bottom: 22px; text-transform: uppercase; }
 .ceremony-card p:not(.eyebrow) { font-family: Georgia,serif; line-height: 1.8; }
+.venue-details{display:grid;gap:7px}.venue-name{color:var(--ink);font-weight:600;text-decoration:underline;text-decoration-color:var(--gold);text-decoration-thickness:2px;text-underline-offset:6px}.venue-address{color:#80545f}
 .ceremony-map { background:rgba(255,255,255,.88); border:8px solid rgba(255,255,255,.88); border-radius:28px; box-shadow:0 18px 50px rgba(20,25,20,.22); height:340px; max-width:920px; overflow:hidden; position:relative; width:calc(100% - 32px); }.ceremony-map::after { border:1px solid rgba(255,255,255,.42); border-radius:19px; content:''; inset:0; pointer-events:none; position:absolute; }.ceremony-map iframe { border:0; border-radius:19px; height:100%; width:100%; }
 .button { align-items: center; border: 1px solid transparent; cursor: pointer; display: inline-flex; gap: 9px; justify-content: center; padding: 14px 22px; }
 .button.primary { background: var(--green); color: #fff; }
@@ -199,6 +200,7 @@ footer>span { font-size: 2.2rem; } footer p { font-family: Georgia,serif; } foot
   .site-shell main .rsvp .rsvp-deadline{align-items:center;color:#3f383a!important;display:flex;flex-wrap:nowrap;font-size:.86rem;font-weight:500!important;gap:9px;line-height:1.45}
   .site-shell main .rsvp .rsvp-deadline>svg{flex:0 0 auto}.site-shell main .rsvp .rsvp-deadline>span{color:inherit!important;font-weight:500!important;white-space:nowrap}
   .site-shell main .rsvp .rsvp-deadline strong{color:#663744!important;font-weight:600!important;margin-left:0}
+  .site-shell main .venue-name{color:#272123!important;text-decoration-color:#9b6572}.site-shell main .venue-address{color:#754653!important;font-weight:500!important}
   .site-shell main .gift-pagination{flex-wrap:nowrap;gap:5px}
   .site-shell main .gift-pagination button:first-child,.site-shell main .gift-pagination button:last-child{font-size:0;flex:0 0 38px;height:38px;min-height:38px;min-width:38px;padding:0}
   .site-shell main .gift-pagination button:first-child::before{content:'‹';font-family:Arial,sans-serif;font-size:1.8rem;font-weight:400;line-height:1}
