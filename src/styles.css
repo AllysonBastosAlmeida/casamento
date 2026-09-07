@@ -183,11 +183,11 @@ footer .developer-credit{font-size:.58rem;font-weight:400;letter-spacing:.08em;m
 }
 
 @media print{
-  @page{size:A4 landscape;margin:11mm}
+  @page{size:A4 landscape;margin:0}
   body{background:#fff;color:#111}
   .admin-shell{background:#fff;display:block;min-height:0}
   .admin-shell aside,.admin-shell main>header,.admin-shell main>.excel-banner,.admin-shell main>.demo-banner,.admin-shell main>.stat-grid,.admin-shell main>.guest-manager,.admin-shell main>.admin-columns,.admin-modal-backdrop,.confirmations-heading{display:none!important}
-  .admin-shell>main{padding:0}.admin-panel.confirmations-panel{margin:0;padding:0}
+  .admin-shell>main{padding:11mm!important}.admin-panel.confirmations-panel{margin:0;padding:0}
   .print-heading{border-bottom:2px solid #704b55;display:grid;grid-template-columns:1fr auto;margin-bottom:16px;padding-bottom:10px}.print-heading p{color:#704b55;font-size:9pt;font-weight:700;grid-column:1;letter-spacing:.16em;margin:0;text-transform:uppercase}.print-heading h1{font-family:Italiana,Georgia,serif;font-size:25pt;grid-column:1;margin:4px 0}.print-heading span{font-size:9pt;grid-column:1}.print-heading strong{align-self:end;font-size:10pt;grid-column:2;grid-row:1/4}
   .confirmation-list{gap:8px;margin:0}.confirmation-card{border:1px solid #bbb;border-radius:7px;break-inside:avoid;page-break-inside:avoid}.confirmation-card.nao{display:none}
   .confirmation-card>header{background:#f3eeee;padding:8px 10px}.confirmation-card>header strong{color:#111;font-size:9pt}.confirmation-card>header>div>span{color:#555;font-size:7pt}.confirmation-card .badge{display:none}.reception-check{color:#111!important;display:block!important;font-size:9pt!important;font-weight:700}
