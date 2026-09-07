@@ -52,6 +52,15 @@ export const submitRsvp = async (payload) => {
 export const submitGift = async (payload) =>
   (await request('createGift', payload)) || saveLocalRecord('gifts', payload);
 
+export const deleteGift = async (id, accessToken) => {
+  const remote = await request('deleteGift', { id }, accessToken);
+  if (remote) return remote;
+  const data = readLocal();
+  data.gifts = (data.gifts || []).filter(item => item.id !== id);
+  writeLocal(data);
+  return { id };
+};
+
 export const submitMessage = async (payload) =>
   (await request('createMessage', payload)) || saveLocalRecord('messages', payload);
 

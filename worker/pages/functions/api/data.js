@@ -49,7 +49,7 @@ export async function onRequest(context) {
       const row = await env.casamento_data.prepare("SELECT payload FROM records WHERE id = 'site-settings' AND collection = 'settings'").first();
       return json({ settings: parsePayload(row?.payload) || { palette: 'rose' } }, 200, origin);
     }
-    const adminAction = ['dashboard', 'createGuest', 'updateGuest', 'deleteGuest', 'updateSettings'].includes(action);
+    const adminAction = ['dashboard', 'createGuest', 'updateGuest', 'deleteGuest', 'deleteGift', 'updateSettings'].includes(action);
     if (adminAction && !(await authorize(request))) return json({ error: 'Acesso administrativo não autorizado.' }, 401, origin);
 
     if (action === 'dashboard') {
@@ -72,6 +72,12 @@ export async function onRequest(context) {
       await env.casamento_data.prepare("INSERT OR REPLACE INTO records (id, collection, payload, created_at) VALUES ('site-settings', 'settings', ?, ?)")
         .bind(JSON.stringify(record), new Date().toISOString()).run();
       return json({ settings: record }, 200, origin);
+    }
+    if (action === 'deleteGift') {
+      const id = String(payload.id || '');
+      if (!id) return json({ error: 'Presente inválido.' }, 400, origin);
+      await env.casamento_data.prepare("DELETE FROM records WHERE id = ? AND collection = 'gifts'").bind(id).run();
+      return json({ id }, 200, origin);
     }
     if (action === 'deleteGuest') {
       const id = String(payload.id || '');
