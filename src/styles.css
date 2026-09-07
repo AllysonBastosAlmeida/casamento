@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Italiana&family=Montserrat:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
 
 :root { color: #3c4038; background: #f7f3ec; font-family: Montserrat, sans-serif; font-synthesis: none; --green:#9c6f79; --cream:#fffafa; --gold:#d7a9b2; --ink:#4b3c40; --soft:#f7e9ec; }
 * { box-sizing: border-box; }
@@ -8,7 +8,7 @@ button,input,textarea,select { font: inherit; }
 button,a { -webkit-tap-highlight-color: transparent; }
 a { color: inherit; text-decoration: none; }
 h1,h2,h3,p { margin-top: 0; }
-h1,h2,h3,.monogram,footer>span { font-family: Italiana, Georgia, serif; font-weight: 400; }
+h1,h2,h3,.monogram,footer>span { font-family:Montserrat,Arial,sans-serif; font-weight:600; letter-spacing:-.035em; }
 h2 { color: var(--ink); font-size: clamp(2.25rem,5vw,4.2rem); line-height: 1.05; margin-bottom: 1.25rem; }
 .site-shell { background:var(--cream); color:var(--ink); overflow: hidden; transition:background .35s ease,color .35s ease; }
 .section p:not(.eyebrow),.ceremony-card p:not(.eyebrow) { color:#4f4949; }
@@ -43,7 +43,7 @@ h2 { color: var(--ink); font-size: clamp(2.25rem,5vw,4.2rem); line-height: 1.05;
 .countdown { display: grid; gap: 1px; grid-template-columns: repeat(4,1fr); margin-top: 55px; }
 .countdown div { border-left: 1px solid #d8d0c3; display: grid; padding: 8px 32px; }
 .countdown div:last-child { border-right: 1px solid #d8d0c3; }
-.countdown strong { color: var(--green); font-family: Italiana,serif; font-size: clamp(2.4rem,5vw,4.4rem); font-weight: 400; }
+.countdown strong { color:var(--green); font-family:Montserrat,Arial,sans-serif; font-size:clamp(2.4rem,5vw,4.4rem); font-weight:500; }
 .countdown span { font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; }
 .story { align-items: center; display: grid; gap: clamp(40px,8vw,100px); grid-template-columns: 1.1fr .9fr; }
 .story-photos { min-height: 630px; position: relative; }
@@ -153,4 +153,11 @@ footer>span { font-size: 2.2rem; } footer p { font-family: Georgia,serif; } foot
   .hero h1{font-size:1.75rem;letter-spacing:.055em}.hero-date{font-size:.92rem}.hero::after{height:30px}
   .stat-grid{grid-template-columns:1fr}.gift-pagination button:first-child,.gift-pagination button:last-child{flex-basis:42%}.gift-card h3{font-size:.6rem}.gift-card strong{font-size:.59rem}.gift-card .text-button{font-size:.57rem}
   .admin-shell aside{gap:12px}.admin-brand span{display:none}
+}
+
+/* Tipografia global mais encorpada e legível em qualquer tela */
+body,button,input,textarea,select,.site-shell p,.site-shell a,.site-shell label,.site-shell legend,
+.palette-title strong,.stat-grid strong,.custom-gift-modal>p:not(.eyebrow),.ceremony-card p:not(.eyebrow),
+.intro>p:not(.eyebrow),.section-lead,.story-copy>p:not(.eyebrow),footer p {
+  font-family:Montserrat,Arial,sans-serif;
 }
