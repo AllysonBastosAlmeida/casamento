@@ -52,9 +52,15 @@ export const submitMessage = async (payload) =>
   (await request('createMessage', payload)) || saveLocalRecord('messages', payload);
 
 export const loadDashboard = async accessToken => {
+  const local = readLocal();
   const remote = await request('dashboard', {}, accessToken);
-  const data = remote?.data || readLocal();
-  return { ...data, guests: data.guests?.length ? data.guests : initialGuests };
+  const data = remote?.data || local;
+  return {
+    rsvps: data.rsvps || [],
+    gifts: data.gifts || [],
+    messages: data.messages || [],
+    guests: data.guests?.length ? data.guests : initialGuests,
+  };
 };
 
 export const addGuest = async (payload, accessToken) => {
@@ -70,6 +76,17 @@ export const deleteGuest = async (id, accessToken) => {
   data.guests = (data.guests?.length ? data.guests : initialGuests).filter(item => item.id !== id);
   writeLocal(data);
   return { id };
+};
+
+export const updateGuest = async (payload, accessToken) => {
+  const remote = await request('updateGuest', payload, accessToken);
+  if (remote) return remote;
+  const data = readLocal();
+  data.guests = (data.guests?.length ? data.guests : initialGuests).map(guest =>
+    guest.id === payload.id ? { ...guest, name: payload.name, side: payload.side } : guest
+  );
+  writeLocal(data);
+  return data.guests.find(guest => guest.id === payload.id);
 };
 
 export const isDemoMode = !API_URL;

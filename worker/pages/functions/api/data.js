@@ -34,7 +34,7 @@ export async function onRequest(context) {
   if (request.method !== 'POST' || !ALLOWED_ORIGINS.has(origin)) return json({ error: 'Requisição não permitida.' }, 403, origin);
   try {
     const { action, payload = {} } = await request.json();
-    const adminAction = ['dashboard', 'createGuest', 'deleteGuest'].includes(action);
+    const adminAction = ['dashboard', 'createGuest', 'updateGuest', 'deleteGuest'].includes(action);
     if (adminAction && !(await authorize(request))) return json({ error: 'Acesso administrativo não autorizado.' }, 401, origin);
 
     if (action === 'dashboard') {
@@ -59,6 +59,19 @@ export async function onRequest(context) {
           .bind(id, new Date().toISOString()),
       ]);
       return json({ id: payload.id }, 200, origin);
+    }
+    if (action === 'updateGuest') {
+      const id = String(payload.id || '');
+      const name = String(payload.name || '').trim();
+      const side = ['Noivo', 'Noiva', 'Ambos'].includes(payload.side) ? payload.side : 'Noivo';
+      if (!id || !name) return json({ error: 'Convidado invÃ¡lido.' }, 400, origin);
+      const record = { name, side };
+      await env.casamento_data.batch([
+        env.casamento_data.prepare("DELETE FROM records WHERE id = ? AND collection = 'guest_deletions'").bind(id),
+        env.casamento_data.prepare("INSERT OR REPLACE INTO records (id, collection, payload, created_at) VALUES (?, 'guests', ?, ?)")
+          .bind(id, JSON.stringify(record), new Date().toISOString()),
+      ]);
+      return json({ ...record, id }, 200, origin);
     }
     const collection = collectionFor(action);
     if (!collection) return json({ error: 'Ação inválida.' }, 400, origin);
