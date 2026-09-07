@@ -5,5 +5,17 @@ import { microsoftFormsProxy } from './server/microsoftFormsProxy.js';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const repository = env.VITE_REPOSITORY_NAME?.replace(/^\/+|\/+$/g, '');
-  return { plugins: [react(), microsoftFormsProxy()], base: repository ? `/${repository}/` : '/' };
+  return {
+    plugins: [react(), microsoftFormsProxy()],
+    base: repository ? `/${repository}/` : '/',
+    build: {
+      rollupOptions: {
+        output: {
+          entryFileNames: 'assets/app.js',
+          chunkFileNames: 'assets/[name].js',
+          assetFileNames: asset => asset.names?.some(name => name.endsWith('.css')) ? 'assets/styles.css' : 'assets/[name][extname]',
+        },
+      },
+    },
+  };
 });
