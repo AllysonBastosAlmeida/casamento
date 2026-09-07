@@ -113,10 +113,10 @@ footer>span { font-size: 2.2rem; } footer p { font-family: Georgia,serif; } foot
 .admin-login { background:radial-gradient(circle at 50% 30%,#fff,#dfe2d8); display:grid; min-height:100vh; padding:24px; place-items:center; }
 .admin-login form { background:rgba(255,255,255,.85); box-shadow:0 25px 70px rgba(44,53,43,.12); display:grid; gap:15px; max-width:440px; padding:50px; text-align:center; width:100%; }.admin-login form>svg { color:var(--gold); margin:auto; }.admin-login h1 { font-size:2.7rem; margin:0; }.admin-login p { color:#72766e; line-height:1.6; }.admin-login a { align-items:center; display:flex; font-size:.75rem; gap:6px; justify-content:center; margin-top:8px; }
 .admin-shell { background:#f4f5f1; display:grid; grid-template-columns:230px 1fr; min-height:100vh; }
-.admin-shell aside { background:#384338; color:#fff; display:flex; flex-direction:column; gap:20px; padding:35px 25px; }.admin-brand { align-items:center; display:flex; gap:12px; margin-bottom:30px; }.admin-brand span { font-size:.7rem; line-height:1.4; text-transform:uppercase; }.admin-shell aside a,.admin-shell aside button { align-items:center; background:none; border:0; color:#fff; display:flex; font-size:.78rem; gap:9px; padding:8px 0; text-align:left; }.admin-shell aside button { cursor:pointer; margin-top:auto; }
+.admin-shell aside { background:#704b55; color:#fff; display:flex; flex-direction:column; gap:20px; padding:35px 25px; }.admin-brand { align-items:center; display:flex; gap:12px; margin-bottom:30px; }.admin-brand span { font-size:.7rem; line-height:1.4; text-transform:uppercase; }.admin-shell aside a,.admin-shell aside button { align-items:center; background:none; border:0; color:#fff; display:flex; font-size:.78rem; gap:9px; padding:8px 0; text-align:left; }.admin-shell aside button { cursor:pointer; margin-top:auto; }
 .admin-shell>main { min-width:0; padding:40px; }.admin-shell main>header { align-items:center; display:flex; justify-content:space-between; }.admin-shell h1 { font-size:3rem; margin-bottom:30px; }.spin { animation:spin 1s linear infinite; }@keyframes spin{to{transform:rotate(360deg)}}
 .demo-banner { background:#fff2ce; border:1px solid #e5ce8d; color:#765f1d; font-size:.78rem; margin-bottom:24px; padding:14px 18px; }
-.admin-header-actions { display:flex; flex-wrap:wrap; gap:10px; justify-content:flex-end; }.excel-button { background:#28794f; color:#fff; }.excel-banner { border:1px solid; font-size:.78rem; margin-bottom:24px; padding:14px 18px; }.excel-banner.success { background:#e6f4e9; border-color:#acd2b4; color:#32633d; }.excel-banner.error { background:#fae9e9; border-color:#dfb3b3; color:#8d3d3d; }
+.admin-header-actions { display:flex; flex-wrap:wrap; gap:10px; justify-content:flex-end; }.excel-button { background:#9c6f79; color:#fff; }.excel-banner { border:1px solid; font-size:.78rem; margin-bottom:24px; padding:14px 18px; }.excel-banner.success { background:#f5e8eb; border-color:#d7a9b2; color:#633c46; }.excel-banner.error { background:#fae9e9; border-color:#dfb3b3; color:#8d3d3d; }
 .stat-grid { display:grid; gap:18px; grid-template-columns:repeat(4,1fr); }.stat-grid article { background:#fff; display:grid; gap:7px; padding:24px; }.stat-grid svg { color:var(--gold); }.stat-grid span { color:#757a73; font-size:.72rem; }.stat-grid strong { color:var(--ink); font-family:Italiana,serif; font-size:2.2rem; font-weight:400; }.stat-grid small { color:#787d75; }
 .admin-panel { background:#fff; margin-top:22px; padding:25px; }.admin-panel h2 { font-size:1.7rem; margin-bottom:20px; }.table-wrap { overflow:auto; }table { border-collapse:collapse; min-width:800px; width:100%; }th { color:#8a8e87; font-size:.63rem; letter-spacing:.09em; padding:12px; text-align:left; text-transform:uppercase; }td { border-top:1px solid #eceee9; font-size:.78rem; padding:15px 12px; }td small { color:#888; display:block; margin-top:4px; white-space:pre-line; }.badge { border-radius:20px; display:inline-block; padding:5px 9px; }.badge.sim { background:#e4f1e6; color:#3d7049; }.badge.nao { background:#f7e5e5; color:#974646; }.empty { color:#999; padding:25px!important; text-align:center!important; }
 .panel-heading { align-items:end; display:flex; gap:25px; justify-content:space-between; }.panel-heading h2 { margin-bottom:4px; }.panel-heading>div>span { color:#888; font-size:.7rem; }.guest-form { align-items:end; display:grid; gap:10px; grid-template-columns:minmax(170px,1fr) 100px auto; }.guest-form input,.guest-form select { padding:10px 4px; }.guest-form .button { padding:11px 14px; }.guest-list { display:grid; gap:1px; grid-template-columns:repeat(3,1fr); margin-top:25px; }.guest-list article { align-items:center; background:#f7f8f5; display:flex; justify-content:space-between; min-width:0; padding:13px; }.guest-list article>div { display:grid; min-width:0; }.guest-list strong { font-size:.78rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }.guest-list span { color:#8b8e87; font-size:.63rem; margin-top:4px; }.guest-list button { background:none; border:0; color:#a65c5c; cursor:pointer; padding:5px; }
@@ -157,8 +157,28 @@ footer>span { font-size: 2.2rem; } footer p { font-family: Georgia,serif; } foot
 
 @media (max-width:420px){
   .hero h1{font-size:1.75rem;letter-spacing:.055em}.hero-date{font-size:.92rem}.hero::after{height:30px}
-  .stat-grid{grid-template-columns:1fr}.gift-card h3{font-size:.6rem}.gift-card strong{font-size:.59rem}.gift-card .text-button{font-size:.57rem}
+  .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.gift-card h3{font-size:.6rem}.gift-card strong{font-size:.59rem}.gift-card .text-button{font-size:.57rem}
   .admin-shell aside{gap:12px}.admin-brand span{display:none}
+}
+
+/* Contraste do painel administrativo em telas móveis. */
+@media (max-width:600px){
+  .admin-shell{color:#2e282a;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+  .admin-shell>main{padding:24px 15px}.admin-shell main>header{align-items:flex-start}
+  .admin-shell h1,.admin-panel h2{color:#382d31;font-family:Italiana,Georgia,serif;font-weight:400;opacity:1}
+  .admin-shell h1{font-size:2.5rem;line-height:1.08}.admin-panel h2{font-size:1.75rem}
+  .admin-shell main .eyebrow{color:#70444f;font-weight:700;opacity:1}
+  .admin-shell aside{background:#704b55}.admin-shell aside :is(a,button,span,strong){color:#fff;font-weight:600;opacity:1}
+  .admin-header-actions .excel-button{background:#9c6f79;color:#fff}.admin-header-actions .outline{background:#fff;color:#49383d;border-color:#b8adaf}
+  .excel-banner.success{background:#f5e8eb;border-color:#d7a9b2;color:#633c46;font-weight:600}
+  .stat-grid{gap:10px;grid-template-columns:repeat(2,minmax(0,1fr))}.stat-grid article{min-height:145px;padding:16px 13px}.stat-grid span{color:#494144;font-size:.67rem;font-weight:600;line-height:1.35;opacity:1}.stat-grid strong{color:#4b3038;font-size:2rem}.stat-grid small{color:#5d5356;font-weight:600;opacity:1}
+  .admin-panel{padding:20px 16px}.panel-heading>div>span,.confirmations-heading p{color:#51484b;font-weight:500;line-height:1.45;opacity:1}
+  .guest-form :is(input,select){color:#30292b;font-weight:500;opacity:1}.guest-form input::placeholder{color:#62585b;opacity:1}.guest-form .button{color:#fff;font-weight:600}
+  .guest-column>header span{color:#70444f;font-weight:700;opacity:1}.guest-column h3{color:#382f31;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-weight:600}.guest-column>header>strong{color:#fff;font-weight:700}
+  .compact-guest-list article>strong{color:#3b3436;font-size:.78rem;font-weight:600;opacity:1}.compact-guest-list article.is-confirmed>strong{color:#345540}.guest-number{color:#71686a;opacity:1}.empty{color:#62595c;font-weight:500;opacity:1}
+  .confirmations-heading>strong{color:#fff;font-weight:700}.confirmation-card>header strong{color:#332b2e;font-size:.82rem;font-weight:700;opacity:1}.confirmation-card>header>div>span{color:#62595c;font-weight:500;opacity:1}.confirmation-card .badge.sim{color:#326341;font-weight:600}.confirmation-card .badge.nao{color:#873d3d;font-weight:600}
+  .confirmation-details span{color:#5d5356;font-weight:700;opacity:1}.confirmation-details strong{color:#373033;font-size:.75rem;font-weight:600;opacity:1}
+  .feed-item strong{color:#332c2e;font-weight:700}.feed-item span{color:#51484b;font-weight:500;opacity:1}.admin-columns .empty{min-height:auto;padding:22px 8px!important}
 }
 
 /* Contraste confiável no Safari/iPhone: não depende da renderização da fonte decorativa. */
