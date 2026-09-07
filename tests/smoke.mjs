@@ -4,11 +4,15 @@ const executablePath = process.env.CHROME_PATH || 'C:\\Program Files\\Google\\Ch
 const baseUrl = (process.env.TEST_BASE_URL || 'http://127.0.0.1:5173/').replace(/\/?$/, '/');
 const browser = await chromium.launch({ executablePath, headless: true });
 const errors = [];
+const recordBrowserError = (scope, message) => {
+  if (message.includes('google is not defined') && message.includes('maps.gstatic.com')) return;
+  errors.push(`${scope}: ${message}`);
+};
 
 for (const viewport of [{ name: 'desktop', width: 1440, height: 900 }, { name: 'mobile', width: 390, height: 844 }]) {
   const page = await browser.newPage({ viewport });
-  page.on('pageerror', error => errors.push(`${viewport.name}: ${error.message}`));
-  page.on('console', message => { if (message.type() === 'error') errors.push(`${viewport.name}: ${message.text()}`); });
+  page.on('pageerror', error => recordBrowserError(viewport.name, `${error.message}\n${error.stack || ''}`));
+  page.on('console', message => { if (message.type() === 'error') recordBrowserError(viewport.name, message.text()); });
   await page.goto(baseUrl, { waitUntil: 'networkidle' });
   await page.locator('h1').waitFor();
   if (await page.locator('.gift-card').count() !== 10) throw new Error(`${viewport.name}: paginação de presentes inválida.`);
@@ -30,6 +34,20 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 900 }, { name: '
   }
   await page.locator('.gift-card .text-button').first().click();
   await page.locator('.pix-box svg').waitFor();
+  if (viewport.name === 'mobile') {
+    const readStyle = locator => locator.evaluate(element => {
+      const style = element.ownerDocument.defaultView.getComputedStyle(element);
+      return { color: style.color, weight: Number(style.fontWeight), opacity: style.opacity };
+    });
+    const modalStyles = {
+      value: await readStyle(page.locator('.modal > strong')),
+      copy: await readStyle(page.locator('.modal .pix-box .text-button')),
+      date: await readStyle(page.locator('.rsvp-deadline strong')),
+    };
+    if (modalStyles.value.color !== 'rgb(91, 39, 51)' || modalStyles.value.weight < 700 || modalStyles.value.opacity !== '1') throw new Error(`mobile: valor do modal sem contraste (${JSON.stringify(modalStyles.value)}).`);
+    if (modalStyles.copy.color !== 'rgb(91, 39, 51)' || modalStyles.copy.weight < 700 || modalStyles.copy.opacity !== '1') throw new Error(`mobile: copiar PIX sem contraste (${JSON.stringify(modalStyles.copy)}).`);
+    if (modalStyles.date.color !== 'rgb(79, 32, 44)' || modalStyles.date.weight < 700 || modalStyles.date.opacity !== '1') throw new Error(`mobile: data limite sem contraste (${JSON.stringify(modalStyles.date)}).`);
+  }
   if (await page.locator('.modal input[type="email"]').count()) throw new Error(`${viewport.name}: campo de e-mail ainda aparece no presente.`);
   await page.locator('.modal-close').click();
   const decline = page.locator('input[name="attending"][value="nao"]');
