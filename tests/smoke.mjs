@@ -12,6 +12,15 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 900 }, { name: '
   await page.goto(baseUrl, { waitUntil: 'networkidle' });
   await page.locator('h1').waitFor();
   if (await page.locator('.gift-card').count() !== 10) throw new Error(`${viewport.name}: paginação de presentes inválida.`);
+  if (viewport.name === 'mobile') {
+    const giftPriceStyle = await page.locator('.gift-card strong').first().evaluate(element => {
+      const style = element.ownerDocument.defaultView.getComputedStyle(element);
+      return { color: style.color, weight: Number(style.fontWeight) };
+    });
+    if (giftPriceStyle.color !== 'rgb(120, 63, 77)' || giftPriceStyle.weight < 700) {
+      throw new Error(`mobile: contraste do valor do presente inválido (${JSON.stringify(giftPriceStyle)}).`);
+    }
+  }
   await page.locator('.gift-card .text-button').first().click();
   await page.locator('.pix-box svg').waitFor();
   if (await page.locator('.modal input[type="email"]').count()) throw new Error(`${viewport.name}: campo de e-mail ainda aparece no presente.`);
