@@ -10,10 +10,11 @@ const crc16 = value => {
 };
 
 const normalize = (value, limit) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Za-z0-9 $%*+\-./:]/g, '').toUpperCase().slice(0, limit);
+const normalizeReference = value => normalize(value, 25).replace(/[^A-Z0-9]/g, '') || '***';
 
 export const createPixPayload = ({ key, receiver, city, amount, reference = 'CASAMENTO' }) => {
   const merchantAccount = field('00', 'BR.GOV.BCB.PIX') + field('01', key.replace(/\D/g, ''));
-  const additional = field('05', normalize(reference, 25));
+  const additional = field('05', normalizeReference(reference));
   const payload = field('00', '01') + field('26', merchantAccount) + field('52', '0000') + field('53', '986') +
     field('54', Number(amount).toFixed(2)) + field('58', 'BR') + field('59', normalize(receiver, 25)) +
     field('60', normalize(city, 15)) + field('62', additional) + '6304';

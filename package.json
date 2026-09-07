@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "check": "npm run lint && npm audit --omit=dev",
+    "check": "npm run lint && npm run test:pix && npm audit --omit=dev",
+    "test:pix": "node tests/pix.mjs",
     "test:smoke": "node tests/smoke.mjs",
     "preview": "vite preview"
   },
