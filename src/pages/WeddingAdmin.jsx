@@ -46,7 +46,7 @@ export default function WeddingAdmin() {
     initializeDashboard();
     return () => { active = false; };
   }, [authenticated, refresh, syncExcel]);
-  useEffect(() => { if (!authenticated || !excelStatus.connected) return undefined; const timer = window.setInterval(syncExcel, 30000); return () => window.clearInterval(timer); }, [authenticated, excelStatus.connected, syncExcel]);
+  useEffect(() => { if (!authenticated || !excelStatus.connected) return undefined; const timer = window.setInterval(syncExcel, 30 * 60 * 1000); return () => window.clearInterval(timer); }, [authenticated, excelStatus.connected, syncExcel]);
 
   const token = () => isDemoMode ? undefined : getMicrosoftAccessToken();
   const createGuest = async event => { event.preventDefault(); const form = event.currentTarget; const values = Object.fromEntries(new FormData(form)); const record = await addGuest(values, await token()); setData(current => ({ ...current, guests: [record, ...current.guests] })); form.reset(); };
