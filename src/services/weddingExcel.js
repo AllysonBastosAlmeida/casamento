@@ -15,9 +15,10 @@ const sheetName = import.meta.env.VITE_WEDDING_RSVP_SHEET || 'Form1';
 const tableName = import.meta.env.VITE_WEDDING_RSVP_TABLE || 'Tabela11';
 const redirectUri = import.meta.env.VITE_MSAL_REDIRECT_URI || `${window.location.origin}${import.meta.env.BASE_URL}`;
 const scopes = ['User.Read', 'Files.Read', 'Files.Read.All', 'Sites.Read.All'];
+const authReturnKey = 'wedding-msal-return-hash';
 
 const msal = new PublicClientApplication({
-  auth: { clientId, authority: 'https://login.microsoftonline.com/common', redirectUri },
+  auth: { clientId, authority: 'https://login.microsoftonline.com/common', redirectUri, navigateToLoginRequestUrl: false },
   cache: { cacheLocation: 'localStorage', storeAuthStateInCookie: false },
 });
 
@@ -26,7 +27,12 @@ const initialize = () => {
   if (!initialization) initialization = (async () => {
     await msal.initialize();
     const response = await msal.handleRedirectPromise();
-    if (response?.account) msal.setActiveAccount(response.account);
+    if (response?.account) {
+      msal.setActiveAccount(response.account);
+      const returnHash = sessionStorage.getItem(authReturnKey);
+      sessionStorage.removeItem(authReturnKey);
+      if (returnHash) window.history.replaceState({}, document.title, `${window.location.pathname}${returnHash}`);
+    }
   })();
   return initialization;
 };
@@ -37,6 +43,7 @@ const getToken = async () => {
   await initialize();
   let account = msal.getActiveAccount() || msal.getAllAccounts()[0];
   if (!account) {
+    sessionStorage.setItem(authReturnKey, window.location.hash || '#/admin');
     await msal.loginRedirect({ scopes, prompt: 'select_account' });
     return new Promise(() => {});
   }
@@ -44,12 +51,14 @@ const getToken = async () => {
   try {
     return (await msal.acquireTokenSilent({ scopes, account })).accessToken;
   } catch {
+    sessionStorage.setItem(authReturnKey, window.location.hash || '#/admin');
     await msal.acquireTokenRedirect({ scopes, account });
     return new Promise(() => {});
   }
 };
 
 export const getMicrosoftAccessToken = getToken;
+export const initializeMicrosoftAuth = initialize;
 
 export const loadExcelRsvps = async () => {
   const token = await getToken();
