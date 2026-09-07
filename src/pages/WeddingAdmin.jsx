@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, CheckCircle2, Cloud, Gift, Heart, LockKeyhole, Plus, RefreshCw, Trash2, Users, XCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { addGuest, deleteGuest, isDemoMode, loadDashboard } from '../services/weddingApi.js';
-import { hasMicrosoftSession, loadExcelRsvps } from '../services/weddingExcel.js';
+import { getMicrosoftAccessToken, hasMicrosoftSession, loadExcelRsvps } from '../services/weddingExcel.js';
 
 const date = value => {
   if (!value) return '—';
@@ -30,7 +30,7 @@ export default function WeddingAdmin() {
   const [data, setData] = useState({ rsvps: [], gifts: [], messages: [], guests: [] });
   const [loading, setLoading] = useState(false);
   const [excelStatus, setExcelStatus] = useState({ connected: false, error: '' });
-  const refresh = useCallback(async () => { setLoading(true); try { setData(await loadDashboard()); } finally { setLoading(false); } }, []);
+  const refresh = useCallback(async () => { setLoading(true); try { const token = isDemoMode ? undefined : await getMicrosoftAccessToken(); setData(await loadDashboard(token)); } finally { setLoading(false); } }, []);
   const syncExcel = useCallback(async () => {
     setLoading(true); setExcelStatus({ connected: false, error: '' });
     try {
@@ -48,8 +48,8 @@ export default function WeddingAdmin() {
     const timer = window.setInterval(syncExcel, 30000);
     return () => window.clearInterval(timer);
   }, [authenticated, excelStatus.connected, syncExcel]);
-  const createGuest = async event => { event.preventDefault(); const form = event.currentTarget; const values = Object.fromEntries(new FormData(form)); const record = await addGuest(values); setData(current => ({ ...current, guests: [record, ...current.guests] })); form.reset(); };
-  const removeGuest = async guest => { if (!window.confirm(`Excluir ${guest.name} da lista?`)) return; await deleteGuest(guest.id); setData(current => ({ ...current, guests: current.guests.filter(item => item.id !== guest.id) })); };
+  const createGuest = async event => { event.preventDefault(); const form = event.currentTarget; const values = Object.fromEntries(new FormData(form)); const token = isDemoMode ? undefined : await getMicrosoftAccessToken(); const record = await addGuest(values, token); setData(current => ({ ...current, guests: [record, ...current.guests] })); form.reset(); };
+  const removeGuest = async guest => { if (!window.confirm(`Excluir ${guest.name} da lista?`)) return; const token = isDemoMode ? undefined : await getMicrosoftAccessToken(); await deleteGuest(guest.id, token); setData(current => ({ ...current, guests: current.guests.filter(item => item.id !== guest.id) })); };
   const totals = useMemo(() => {
     const yes = data.rsvps.filter(item => item.attending === 'sim');
     return { answers: data.rsvps.length, confirmed: yes.reduce((sum, item) => sum + Number(item.adults || 1) + Number(item.children || 0), 0), declined: data.rsvps.filter(item => item.attending === 'nao').length, giftValue: data.gifts.reduce((sum, item) => sum + Number(item.value || 0), 0) };

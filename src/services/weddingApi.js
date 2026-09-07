@@ -14,11 +14,11 @@ const readLocal = () => {
 
 const writeLocal = (data) => localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
-const request = async (action, payload) => {
+const request = async (action, payload, accessToken) => {
   if (!API_URL) return null;
   const response = await fetch(API_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    headers: { 'Content-Type': 'text/plain;charset=utf-8', ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}) },
     body: JSON.stringify({ action, payload }),
   });
   if (!response.ok) throw new Error('Não foi possível salvar. Tente novamente.');
@@ -51,20 +51,20 @@ export const submitGift = async (payload) =>
 export const submitMessage = async (payload) =>
   (await request('createMessage', payload)) || saveLocalRecord('messages', payload);
 
-export const loadDashboard = async () => {
-  const remote = await request('dashboard', {});
+export const loadDashboard = async accessToken => {
+  const remote = await request('dashboard', {}, accessToken);
   const data = remote?.data || readLocal();
   return { ...data, guests: data.guests?.length ? data.guests : initialGuests };
 };
 
-export const addGuest = async payload => {
-  const remote = await request('createGuest', payload);
+export const addGuest = async (payload, accessToken) => {
+  const remote = await request('createGuest', payload, accessToken);
   if (remote) return remote;
   return saveLocalRecord('guests', payload);
 };
 
-export const deleteGuest = async id => {
-  const remote = await request('deleteGuest', { id });
+export const deleteGuest = async (id, accessToken) => {
+  const remote = await request('deleteGuest', { id }, accessToken);
   if (remote) return remote;
   const data = readLocal();
   data.guests = (data.guests?.length ? data.guests : initialGuests).filter(item => item.id !== id);

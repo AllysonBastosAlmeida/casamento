@@ -32,6 +32,7 @@ jobs:
         env:
           VITE_REPOSITORY_NAME: casamento
           VITE_RSVP_PROXY_URL: https://casamento-rsvp-6kj.pages.dev/api/rsvp
+          VITE_WEDDING_API_URL: https://casamento-rsvp-6kj.pages.dev/api/data
           VITE_MSAL_REDIRECT_URI: https://allysonbastosalmeida.github.io/casamento/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

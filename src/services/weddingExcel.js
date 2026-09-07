@@ -44,6 +44,8 @@ const getToken = async () => {
   }
 };
 
+export const getMicrosoftAccessToken = getToken;
+
 export const loadExcelRsvps = async () => {
   const token = await getToken();
   const encodedSheet = encodeURIComponent(sheetName);

@@ -1,0 +1,8 @@
+name = "casamento-rsvp"
+pages_build_output_dir = "./public"
+compatibility_date = "2026-09-07"
+
+[[d1_databases]]
+binding = "casamento_data"
+database_name = "casamento-data"
+database_id = "6d77df2a-0bac-414b-9460-f444e3840fbd"

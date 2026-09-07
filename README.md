@@ -27,7 +27,7 @@ O URI `https://allysonbastosalmeida.github.io/casamento/` também deve estar cad
 ## Dados
 
 - Confirmações: Microsoft Forms → tabela `Tabela11`, aba `Form1`, arquivo `Orçamento Web`.
-- Presentes, recados e lista editável: atualmente armazenados localmente no navegador.
+- Presentes, recados e lista editável: Cloudflare Pages Functions + banco D1 `casamento-data`.
 - A chave PIX e os valores dos presentes fazem parte do conteúdo público do site.
 
 O PIN do painel é uma barreira visual no front-end, não um segredo criptográfico. O acesso ao Excel continua protegido pelo login Microsoft.
