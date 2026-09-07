@@ -100,12 +100,17 @@ export const loadExcelRsvps = async () => {
   if (rows.length < 2) return [];
   const sheetHeaders = rows[0].map(normalize);
   const value = (row, ...names) => {
-    const index = sheetHeaders.findIndex(header => names.includes(header));
-    return index >= 0 ? row[index] : '';
+    for (const name of names) {
+      const index = sheetHeaders.indexOf(name);
+      if (index >= 0 && row[index] !== '' && row[index] != null) return row[index];
+    }
+    return '';
   };
   return rows.slice(1).filter(row => row.some(Boolean)).map((row, index) => ({
     id: `excel-${value(row, 'id') || index + 1}`,
-    name: value(row, 'nomecompleto', 'nome'),
+    // O Forms usa a coluna F para "Nome Completo". O fallback por posição
+    // protege contra variações invisíveis no cabeçalho exportado pelo Excel.
+    name: value(row, 'nomecompleto', 'nome') || row[5] || row[4] || '',
     attending: normalize(value(row, 'presenca1', 'presenca')).startsWith('sim') ? 'sim' : 'nao',
     adults: Number(value(row, 'adultos') || 0),
     children: Number(value(row, 'criancasacimade5anos') || 0),

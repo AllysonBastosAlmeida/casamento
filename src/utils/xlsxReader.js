@@ -7,7 +7,7 @@ const columnIndex = reference => {
   return [...letters.toUpperCase()].reduce((value, letter) => value * 26 + letter.charCodeAt(0) - 64, 0) - 1;
 };
 const excelDate = value => {
-  const date = new Date(Math.round((Number(value) - 25569) * 86400000));
+  const date = new Date((Number(value) - 25569) * 86400000);
   return Number.isNaN(date.getTime()) ? value : date.toLocaleString('pt-BR', { timeZone: 'UTC' });
 };
 
