@@ -3,7 +3,7 @@ import { ArrowLeft, CheckCircle2, Cloud, Gift, Heart, LockKeyhole, Pencil, Plus,
 import { Link } from 'react-router-dom';
 import { initialGuests } from '../config.js';
 import { addGuest, deleteGuest, isDemoMode, loadDashboard, updateGuest } from '../services/weddingApi.js';
-import { getMicrosoftAccessToken, hasMicrosoftSession, loadExcelRsvps } from '../services/weddingExcel.js';
+import { getMicrosoftAccessToken, loadExcelRsvps } from '../services/weddingExcel.js';
 
 const formatDate = value => {
   if (!value) return '—';
@@ -34,10 +34,18 @@ export default function WeddingAdmin() {
   const [excelStatus, setExcelStatus] = useState({ connected: false, error: '' });
   const [dashboardError, setDashboardError] = useState('');
   const [editingGuest, setEditingGuest] = useState(null);
-  const refresh = useCallback(async () => { setLoading(true); setDashboardError(''); try { const token = isDemoMode ? undefined : await getMicrosoftAccessToken(); setData(await loadDashboard(token)); } catch (error) { setDashboardError(error.message || 'Não foi possível carregar os dados compartilhados. A lista-base continua disponível.'); } finally { setLoading(false); } }, []);
+  const refresh = useCallback(async () => { setLoading(true); setDashboardError(''); try { const accessToken = isDemoMode ? undefined : await getMicrosoftAccessToken(); const dashboard = await loadDashboard(accessToken); setData(current => ({ ...dashboard, rsvps: current.rsvps })); } catch (error) { setDashboardError(error.message || 'Não foi possível carregar os dados compartilhados. A lista-base continua disponível.'); } finally { setLoading(false); } }, []);
   const syncExcel = useCallback(async () => { setLoading(true); setExcelStatus({ connected: false, error: '' }); try { const rsvps = await loadExcelRsvps(); setData(current => ({ ...current, rsvps })); setExcelStatus({ connected: true, error: '' }); } catch (error) { setExcelStatus({ connected: false, error: error.message || 'Falha ao conectar ao Excel.' }); } finally { setLoading(false); } }, []);
-  useEffect(() => { if (authenticated) refresh(); }, [authenticated, refresh]);
-  useEffect(() => { if (authenticated) hasMicrosoftSession().then(connected => connected && syncExcel()).catch(() => {}); }, [authenticated, syncExcel]);
+  useEffect(() => {
+    if (!authenticated) return undefined;
+    let active = true;
+    const initializeDashboard = async () => {
+      await refresh();
+      if (active) await syncExcel();
+    };
+    initializeDashboard();
+    return () => { active = false; };
+  }, [authenticated, refresh, syncExcel]);
   useEffect(() => { if (!authenticated || !excelStatus.connected) return undefined; const timer = window.setInterval(syncExcel, 30000); return () => window.clearInterval(timer); }, [authenticated, excelStatus.connected, syncExcel]);
 
   const token = () => isDemoMode ? undefined : getMicrosoftAccessToken();
@@ -51,7 +59,7 @@ export default function WeddingAdmin() {
   if (!authenticated) return <Login onLogin={() => { sessionStorage.setItem('wedding-admin', '1'); setAuthenticated(true); }} />;
 
   return <div className="admin-shell"><aside><div className="admin-brand"><Heart /> <span>Painel<br /><strong>dos noivos</strong></span></div><Link to="/"><ArrowLeft /> Ver site</Link><button onClick={() => { sessionStorage.removeItem('wedding-admin'); setAuthenticated(false); }}>Sair</button></aside><main>
-    <header><div><p className="eyebrow">Visão geral</p><h1>Gestão do casamento</h1></div><div className="admin-header-actions"><button className="button excel-button" onClick={syncExcel} disabled={loading}><Cloud className={loading ? 'spin' : ''} /> {excelStatus.connected ? 'Sincronizado' : 'Conectar Excel'}</button><button className="button outline" onClick={refresh} disabled={loading}><RefreshCw className={loading ? 'spin' : ''} /> Atualizar dados</button></div></header>
+    <header><div><p className="eyebrow">Visão geral</p><h1>Gestão do casamento</h1></div><div className="admin-header-actions"><button className="button excel-button" onClick={syncExcel} disabled={loading}><Cloud className={loading ? 'spin' : ''} /> {excelStatus.connected ? 'Sincronizado' : 'Conectar Excel'}</button><button className="button outline" onClick={async () => { await refresh(); await syncExcel(); }} disabled={loading}><RefreshCw className={loading ? 'spin' : ''} /> Atualizar dados</button></div></header>
     {dashboardError && <div className="excel-banner error">{dashboardError}</div>}{excelStatus.error && <div className="excel-banner error">{excelStatus.error}</div>}{excelStatus.connected && <div className="excel-banner success">Aba Form1 conectada. As confirmações abaixo vieram do Excel.</div>}{isDemoMode && !excelStatus.connected && <div className="demo-banner">Conecte sua conta Microsoft para carregar as confirmações da aba Form1. Presentes e recados ainda estão no modo local.</div>}
     <div className="stat-grid"><article><Users /><span>Convidados confirmados</span><strong>{totals.confirmed}</strong></article><article><CheckCircle2 /><span>Respostas recebidas</span><strong>{totals.answers}</strong></article><article><XCircle /><span>Não poderão ir</span><strong>{totals.declined}</strong></article><article><Gift /><span>Presentes reservados</span><strong>{data.gifts.length}</strong><small>R$ {totals.giftValue.toLocaleString('pt-BR')}</small></article></div>
     <section className="admin-panel guest-manager"><div className="panel-heading"><div><h2>Lista de convidados</h2><span>{data.guests.length} pessoas cadastradas no total</span></div><form className="guest-form" onSubmit={createGuest}><input required name="name" placeholder="Nome do convidado" /><select name="side" defaultValue="Noivo"><option>Noivo</option><option>Noiva</option><option>Ambos</option></select><button className="button primary"><Plus size={17} /> Adicionar</button></form></div><div className="guest-split"><GuestColumn title="Convidados do noivo" label="Allyson" guests={groomGuests} onEdit={setEditingGuest} onRemove={removeGuest} /><GuestColumn title="Convidados da noiva" label="Mayara" guests={brideGuests} onEdit={setEditingGuest} onRemove={removeGuest} /></div>{sharedGuests.length > 0 && <section className="shared-guests"><header><div><span>Lista compartilhada</span><h3>Convidados dos dois</h3></div><strong>{sharedGuests.length}</strong></header><div>{sharedGuests.map(guest => <article key={guest.id}><strong>{guest.name}</strong><div className="guest-actions"><button onClick={() => setEditingGuest(guest)} aria-label={`Editar ${guest.name}`}><Pencil size={14} /></button><button onClick={() => removeGuest(guest)} aria-label={`Excluir ${guest.name}`}><Trash2 size={15} /></button></div></article>)}</div></section>}</section>
