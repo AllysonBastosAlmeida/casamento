@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Italiana&family=Montserrat:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Italiana&family=Montserrat:wght@400;500;600;700&display=swap');
 
 :root { color:#3c4038; background:#f7f3ec; font-family:Montserrat,sans-serif; font-synthesis:weight; --green:#9c6f79; --cream:#fffafa; --gold:#d7a9b2; --ink:#4b3c40; --soft:#f7e9ec; }
 * { box-sizing: border-box; }
@@ -154,7 +154,7 @@ footer>span { font-size: 2.2rem; } footer p { font-family: Georgia,serif; } foot
 
 @media (max-width:420px){
   .hero h1{font-size:1.75rem;letter-spacing:.055em}.hero-date{font-size:.92rem}.hero::after{height:30px}
-  .stat-grid{grid-template-columns:1fr}.gift-pagination button:first-child,.gift-pagination button:last-child{flex-basis:42%}.gift-card h3{font-size:.6rem}.gift-card strong{font-size:.59rem}.gift-card .text-button{font-size:.57rem}
+  .stat-grid{grid-template-columns:1fr}.gift-card h3{font-size:.6rem}.gift-card strong{font-size:.59rem}.gift-card .text-button{font-size:.57rem}
   .admin-shell aside{gap:12px}.admin-brand span{display:none}
 }
 
@@ -181,7 +181,7 @@ footer>span { font-size: 2.2rem; } footer p { font-family: Georgia,serif; } foot
   .site-shell main .gift-pagination button.active{background:#8e5b67;color:#fff!important}
   .site-shell main .gift-pagination button:disabled{color:#71696b!important;opacity:.7}
   .hero h1{color:#fff!important;font-family:Italiana,Georgia,serif!important;font-weight:400!important;letter-spacing:.07em;text-shadow:0 3px 16px #000,0 1px 3px #000}
-  .hero-date{color:#fff!important;font-family:Italiana,Georgia,serif!important;font-weight:400!important;letter-spacing:.13em;text-shadow:0 2px 10px #000}
+  .hero-date{color:#fff!important;font-family:"Cormorant Garamond",Georgia,serif!important;font-size:1.2rem;font-weight:600!important;letter-spacing:.12em;text-shadow:0 2px 10px #000}
   .site-shell main .intro>p:not(.eyebrow),
   .site-shell main .gifts-section .section-lead,
   .site-shell main .rsvp>div>p:not(.eyebrow),
@@ -199,4 +199,8 @@ footer>span { font-size: 2.2rem; } footer p { font-family: Georgia,serif; } foot
   .site-shell main .rsvp .rsvp-deadline{align-items:center;color:#3f383a!important;display:flex;flex-wrap:nowrap;font-size:.86rem;font-weight:500!important;gap:9px;line-height:1.45}
   .site-shell main .rsvp .rsvp-deadline>svg{flex:0 0 auto}.site-shell main .rsvp .rsvp-deadline>span{color:inherit!important;font-weight:500!important;white-space:nowrap}
   .site-shell main .rsvp .rsvp-deadline strong{color:#663744!important;font-weight:600!important;margin-left:0}
+  .site-shell main .gift-pagination{flex-wrap:nowrap;gap:5px}
+  .site-shell main .gift-pagination button:first-child,.site-shell main .gift-pagination button:last-child{font-size:0;flex:0 0 38px;height:38px;min-height:38px;min-width:38px;padding:0}
+  .site-shell main .gift-pagination button:first-child::before{content:'‹';font-family:Arial,sans-serif;font-size:1.8rem;font-weight:400;line-height:1}
+  .site-shell main .gift-pagination button:last-child::before{content:'›';font-family:Arial,sans-serif;font-size:1.8rem;font-weight:400;line-height:1}
 }
