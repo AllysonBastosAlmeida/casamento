@@ -41,6 +41,17 @@ function Countdown() {
   return <div className="countdown">{units.map(([label, value]) => <div key={label}><strong>{String(value).padStart(2, '0')}</strong><span>{label}</span></div>)}</div>;
 }
 
+function FloralCorner({ className }) {
+  return <svg className={`ceremony-floral ${className}`} viewBox="0 0 180 180" aria-hidden="true">
+    <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+      <path className="floral-stem" d="M15 166C41 130 47 91 80 54C99 33 124 20 160 13" />
+      <path d="M37 134C20 130 13 118 12 103C27 105 38 116 37 134ZM49 112C62 101 76 100 88 107C77 120 64 124 49 112ZM59 84C45 78 38 66 39 52C53 55 62 67 59 84ZM79 57C91 45 105 42 118 48C108 61 95 66 79 57ZM108 35C102 23 105 12 115 4C123 16 121 27 108 35ZM127 25C140 22 151 27 158 38C144 42 133 38 127 25Z" />
+      <path d="M26 151C19 142 9 140 2 144C7 154 15 158 26 151ZM68 71C71 57 64 46 53 40C48 53 54 65 68 71ZM94 44C88 34 89 24 97 16C105 25 104 35 94 44Z" />
+      <circle cx="82" cy="93" r="4" /><circle cx="122" cy="31" r="3" /><circle cx="45" cy="124" r="3" />
+    </g>
+  </svg>;
+}
+
 function RsvpForm() {
   const [status, setStatus] = useState('');
   const [attending, setAttending] = useState('sim');
@@ -135,7 +146,7 @@ export default function WeddingSite() {
         <a className="scroll-cue" href="#boas-vindas"><ChevronDown /></a>
       </section>
       <section id="boas-vindas" className="section intro"><p className="eyebrow">Sejam bem-vindos</p><h2>O nosso grande dia está chegando</h2><p>Criamos este site para compartilhar cada detalhe desse momento tão especial. Esperamos celebrar o amor ao lado de vocês.</p><Countdown /></section>
-      <section id="cerimonia" className="ceremony"><div className="ceremony-card"><CalendarDays /><p className="eyebrow">Reserve esta data</p><h2>Cerimônia & celebração</h2><strong>{wedding.dateLabel} · {wedding.timeLabel}</strong><p>{wedding.venue}<br />{wedding.address}</p><a className="button light" href={wedding.mapUrl} target="_blank" rel="noreferrer"><MapPin size={18} /> Traçar rota</a></div><div className="ceremony-map"><iframe title={`Mapa — ${wedding.venue}`} src="https://www.google.com/maps?q=-24.0154444,-46.4027778&z=16&output=embed" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen /></div></section>
+      <section id="cerimonia" className="ceremony"><div className="ceremony-card"><FloralCorner className="floral-top" /><FloralCorner className="floral-bottom" /><CalendarDays /><p className="eyebrow">Reserve esta data</p><h2>Cerimônia & celebração</h2><strong>{wedding.dateLabel} · {wedding.timeLabel}</strong><p>{wedding.venue}<br />{wedding.address}</p><a className="button light" href={wedding.mapUrl} target="_blank" rel="noreferrer"><MapPin size={18} /> Traçar rota</a></div><div className="ceremony-map"><iframe title={`Mapa — ${wedding.venue}`} src="https://www.google.com/maps?q=-24.0154444,-46.4027778&z=16&output=embed" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen /></div></section>
       <section id="presentes" className="section gifts-section"><p className="eyebrow">Um gesto de carinho</p><div className="gifts-heading"><div><h2>Lista de presentes</h2><p className="section-lead">Sua presença é o maior presente. Mas, se desejar nos presentear, preparamos algumas ideias.</p></div><button className="button create-gift-button" onClick={() => setCustomGiftOpen(true)}><Gift size={19} /> Crie seu Presente</button></div><div className="gift-grid">{visibleGifts.map(item => <article className="gift-card" key={item.id}><div className="gift-art gift-figure" role="img" aria-label={item.name}>{item.emoji}</div><div><h3>{item.name}</h3><strong>{money.format(item.price)}</strong><button className="text-button" onClick={() => setGift(item)}>Presentear <Gift size={16} /></button></div></article>)}</div><nav className="gift-pagination" aria-label="Páginas da lista de presentes"><button disabled={giftPage === 1} onClick={() => changeGiftPage(giftPage - 1)}>Anterior</button>{Array.from({ length: giftPageCount }, (_, index) => index + 1).map(page => <button key={page} className={page === giftPage ? 'active' : ''} aria-current={page === giftPage ? 'page' : undefined} onClick={() => changeGiftPage(page)}>{page}</button>)}<button disabled={giftPage === giftPageCount} onClick={() => changeGiftPage(giftPage + 1)}>Próxima</button></nav></section>
       <section id="confirmacao" className="section rsvp"><div><p className="eyebrow">Esperamos por você</p><h2>Confirme sua presença</h2><p>Para prepararmos tudo com muito cuidado, sua confirmação será registrada diretamente em nossa lista.</p><p className="rsvp-deadline"><CalendarDays size={18} /> Confirme sua presença até <strong>20/10/2026</strong>.</p></div><RsvpForm /></section>
       <section id="recados" className="section messages"><p className="eyebrow">Palavras que ficam</p><h2>Deixe um recado</h2><form className="message-form" onSubmit={leaveMessage}><input required name="name" placeholder="Seu nome" /><textarea required name="message" placeholder="Escreva sua mensagem para os noivos" /><button className="button primary">Enviar recado <Send size={17} /></button></form></section>
