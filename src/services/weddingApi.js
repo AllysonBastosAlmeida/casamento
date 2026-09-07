@@ -21,7 +21,11 @@ const request = async (action, payload, accessToken) => {
     headers: { 'Content-Type': 'text/plain;charset=utf-8', ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}) },
     body: JSON.stringify({ action, payload }),
   });
-  if (!response.ok) throw new Error('Não foi possível salvar. Tente novamente.');
+  if (!response.ok) {
+    const result = await response.json().catch(() => ({}));
+    const fallback = action === 'dashboard' ? 'Não foi possível carregar os dados compartilhados.' : 'Não foi possível salvar. Tente novamente.';
+    throw new Error(result.error || fallback);
+  }
   return response.json();
 };
 

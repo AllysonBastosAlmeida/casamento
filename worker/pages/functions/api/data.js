@@ -17,6 +17,12 @@ const cors = origin => ({
 });
 const json = (body, status, origin) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', ...cors(origin) } });
 const collectionFor = action => ({ createGift: 'gifts', createMessage: 'messages', createGuest: 'guests' })[action];
+const parsePayload = value => {
+  try { return JSON.parse(value); } catch {
+    const legacy = String(value || '').match(/^\{side:([^,}]+),name:(.*)\}$/);
+    return legacy ? { side: legacy[1], name: legacy[2] } : null;
+  }
+};
 
 async function authorize(request) {
   const authorization = request.headers.get('Authorization');
@@ -44,7 +50,8 @@ export async function onRequest(context) {
       for (const row of result.results) {
         if (row.collection === 'guest_deletions') { deletedGuestIds.add(row.id); continue; }
         if (!data[row.collection]) continue;
-        data[row.collection].push({ ...JSON.parse(row.payload), id: row.id, createdAt: row.created_at });
+        const payload = parsePayload(row.payload);
+        if (payload) data[row.collection].push({ ...payload, id: row.id, createdAt: row.created_at });
       }
       const remoteGuestIds = new Set(data.guests.map(guest => guest.id));
       data.guests.push(...INITIAL_GUESTS.filter(guest => !remoteGuestIds.has(guest.id) && !deletedGuestIds.has(guest.id)));
