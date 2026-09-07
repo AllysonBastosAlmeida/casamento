@@ -142,6 +142,19 @@ footer .developer-credit{font-size:.58rem;font-weight:400;letter-spacing:.08em;m
   .modal-backdrop{padding:12px}.modal{border-radius:20px;width:min(100%,520px)}.guest-split{grid-template-columns:1fr 1fr}.shared-guests>div{grid-template-columns:repeat(2,1fr)}
 }
 
+/* Disponibilidade, acessibilidade e personalização administrada. */
+.gift-card.is-reserved{opacity:.72}.gift-card.is-reserved .gift-art{filter:grayscale(.35)}.gift-card .text-button:disabled{color:#71696b;cursor:not-allowed;text-decoration:none}
+.skip-link{background:#fff;color:#352b2e;left:12px;padding:10px 14px;position:fixed;top:-60px;z-index:200}.skip-link:focus{top:12px}.sr-only{height:1px!important;margin:-1px!important;overflow:hidden!important;padding:0!important;position:absolute!important;width:1px!important;clip:rect(0,0,0,0);white-space:nowrap}.overlay-open{overflow:hidden}.button:disabled{cursor:wait;opacity:.65}
+.print-confirmation-list{display:none}.palette-manager{display:grid;gap:18px}.palette-manager>div:first-child{align-items:center;display:flex;gap:12px}.palette-manager>div:first-child>svg{color:#9c6f79}.palette-manager h2{margin:0}.palette-manager p{color:#62595c;font-size:.72rem;margin:4px 0 0}.palette-manager>small{color:#62595c}.admin-palette-options{display:grid;gap:8px;grid-template-columns:repeat(5,minmax(0,1fr))}.admin-palette-options button{align-items:center;background:#fff;border:1px solid #dedbd7;color:#40383a;cursor:pointer;display:grid;font-size:.67rem;gap:8px;grid-template-columns:38px 1fr 16px;padding:10px;text-align:left}.admin-palette-options button.selected{background:#f7e9ec;border-color:#9c6f79}
+@media (max-width:900px){.admin-palette-options{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){
+  .section{padding-bottom:58px;padding-top:58px}.intro{padding-bottom:52px;padding-top:58px}.intro h2{margin-bottom:18px}.countdown{margin-top:28px}
+  .ceremony{gap:18px;padding-bottom:38px;padding-top:38px}.ceremony-card{padding-bottom:42px;padding-top:42px}.ceremony-card h2{margin-bottom:18px}.ceremony-card .venue-details{margin:20px 0}.ceremony-map{height:220px}
+  .gifts-section{padding-bottom:58px;padding-top:58px}.gift-grid{margin-top:22px}.gift-pagination{margin-top:20px}
+  .rsvp{gap:26px;padding-bottom:58px;padding-top:58px}.rsvp h2{margin-bottom:18px}.form-card{gap:15px}.form-card textarea{min-height:72px}.choice-row{gap:8px}.choice-row label{padding:14px}.messages{padding-bottom:58px;padding-top:58px}.message-form{gap:14px;margin-top:25px}.message-form textarea{min-height:90px}
+  .admin-palette-options{grid-template-columns:1fr 1fr}.admin-palette-options button{font-size:.62rem;padding:8px}.palette-manager{gap:14px}
+}
+
 @media (max-width:600px){
   .site-shell{color:#2d2729}.site-shell h2,.site-shell h3{color:#2d2729;font-family:Montserrat,Arial,sans-serif;font-weight:700;letter-spacing:-.025em}.site-shell h2{font-size:clamp(1.85rem,9vw,2.65rem);line-height:1.15}.site-shell .eyebrow{color:#674751;font-weight:700}.site-shell .section p:not(.eyebrow),.site-shell .ceremony-card p:not(.eyebrow),.site-shell label,.site-shell fieldset legend,.site-shell input,.site-shell textarea,.site-shell select{color:#373033}.intro>p:not(.eyebrow),.section-lead,.rsvp>div>p:not(.eyebrow),.ceremony-card p:not(.eyebrow){font-family:Montserrat,Arial,sans-serif;font-weight:500;line-height:1.65}.field-help{color:#514a4c}.hero-identity{border-radius:12px;margin-top:38vh;padding:18px 20px;width:calc(100% - 12px)}.hero h1{font-weight:700;text-shadow:0 3px 16px #000,0 1px 2px #000}.hero-date{text-shadow:0 2px 10px #000}
   .hero.has-photo{background-position:46% center}.hero-identity{margin-top:38vh}.hero h1{line-height:1.28}.hero-date{letter-spacing:.09em}
@@ -187,10 +200,10 @@ footer .developer-credit{font-size:.58rem;font-weight:400;letter-spacing:.08em;m
   @page{size:A4 landscape;margin:0}
   body{background:#fff;color:#111}
   .admin-shell{background:#fff;display:block;min-height:0}
-  .admin-shell aside,.admin-shell main>header,.admin-shell main>.excel-banner,.admin-shell main>.demo-banner,.admin-shell main>.stat-grid,.admin-shell main>.guest-manager,.admin-shell main>.admin-columns,.admin-modal-backdrop,.confirmations-heading{display:none!important}
+  .admin-shell aside,.admin-shell main>header,.admin-shell main>.excel-banner,.admin-shell main>.demo-banner,.admin-shell main>.stat-grid,.admin-shell main>.guest-manager,.admin-shell main>.admin-columns,.admin-shell main>.palette-manager,.admin-modal-backdrop,.confirmations-heading,.screen-confirmation-list{display:none!important}
   .admin-shell>main{padding:11mm!important}.admin-panel.confirmations-panel{margin:0;padding:0}
   .print-heading{border-bottom:2px solid #704b55;display:grid;grid-template-columns:1fr auto;margin-bottom:16px;padding-bottom:10px}.print-heading p{color:#704b55;font-size:9pt;font-weight:700;grid-column:1;letter-spacing:.16em;margin:0;text-transform:uppercase}.print-heading h1{font-family:Italiana,Georgia,serif;font-size:25pt;grid-column:1;margin:4px 0}.print-heading span{font-size:9pt;grid-column:1}.print-heading strong{align-self:end;font-size:10pt;grid-column:2;grid-row:1/4}
-  .confirmation-list{gap:8px;margin:0}.confirmation-card{border:1px solid #bbb;border-radius:7px;break-inside:avoid;page-break-inside:avoid}.confirmation-card.nao{display:none}
+  .print-confirmation-list{display:grid!important}.confirmation-list{gap:8px;margin:0}.confirmation-card{border:1px solid #bbb;border-radius:7px;break-inside:avoid;page-break-inside:avoid}.confirmation-card.nao{display:none}
   .confirmation-card>header{background:#f3eeee;padding:8px 10px}.confirmation-card>header strong{color:#111;font-size:9pt}.confirmation-card>header>div>span{color:#555;font-size:7pt}.confirmation-card .badge{display:none}.reception-check{color:#111!important;display:block!important;font-size:9pt!important;font-weight:700}
   .confirmation-details{grid-template-columns:70px 105px 1.4fr 130px 1.5fr}.confirmation-details>div{gap:3px;padding:7px 9px}.confirmation-details span{color:#555;font-size:6.5pt}.confirmation-details strong{color:#111;font-size:8pt}
 }

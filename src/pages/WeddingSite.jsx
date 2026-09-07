@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { CalendarDays, Check, ChevronDown, Gift, MapPin, Menu, Palette, Send, X } from 'lucide-react';
+import { CalendarDays, Check, ChevronDown, Gift, MapPin, Menu, Send, X } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { colorPalettes, gifts, pix, wedding } from '../config.js';
-import { isDemoMode, submitGift, submitMessage, submitRsvp } from '../services/weddingApi.js';
+import { isDemoMode, loadReservedGiftIds, loadSiteSettings, submitGift, submitMessage, submitRsvp } from '../services/weddingApi.js';
 import { createPixPayload } from '../utils/pix.js';
 
 const money = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -14,16 +14,6 @@ const petals = Array.from({ length: 20 }, (_, index) => ({
   size: 8 + (index % 5) * 2,
   drift: -45 + (index % 7) * 15,
 }));
-
-function PalettePicker({ selected, onSelect }) {
-  const [open, setOpen] = useState(false);
-  return <div className={`palette-picker ${open ? 'open' : ''}`}>
-    <button className="palette-toggle" onClick={() => setOpen(value => !value)} aria-label="Escolher paleta de cores"><Palette size={21} /><span>Cores</span></button>
-    <div className="palette-panel"><div className="palette-title"><div><strong>Paleta do casamento</strong><span>Escolha uma combinação</span></div><button onClick={() => setOpen(false)} aria-label="Fechar"><X size={18} /></button></div>
-      <div className="palette-options">{colorPalettes.map(item => <button key={item.id} className={selected === item.id ? 'selected' : ''} onClick={() => onSelect(item.id)} title={item.name}><span className="color-pair"><i style={{ background: item.primary }} /><i style={{ background: item.accent }} /></span><span>{item.name}</span>{selected === item.id && <Check size={14} />}</button>)}</div>
-    </div>
-  </div>;
-}
 
 function Countdown() {
   const calculate = () => Math.max(0, new Date(wedding.date).getTime() - Date.now());
@@ -67,7 +57,7 @@ function RsvpForm() {
     try {
       await submitRsvp(Object.fromEntries(form));
       formElement.reset(); setAttending('sim'); setAdults(1); setStatus('success');
-    } catch { setStatus('error'); }
+    } catch (error) { setStatus(error.message || 'Não foi possível enviar. Tente novamente.'); }
   };
   return <form className="form-card" onSubmit={onSubmit}>
     <label>Nome completo<input required name="name" autoComplete="name" /></label>
@@ -80,11 +70,11 @@ function RsvpForm() {
       <label>Crianças acima de 5 anos<select name="children" defaultValue="0">{[0,1,2,3,4,5].map(n => <option key={n}>{n}</option>)}</select><small className="field-help">Crianças de até 5 anos não precisam ser incluídas.</small></label>
     </div>}
     {attending === 'sim' && <label>Nomes dos acompanhantes<textarea name="companions" placeholder="Um nome por linha" onChange={updateCompanions} /></label>}
-    {attending === 'sim' && <label>WhatsApp<input required name="phone" inputMode="tel" autoComplete="tel" placeholder="(13) 99999-9999" /></label>}
+    <label>WhatsApp<input required name="phone" inputMode="tel" autoComplete="tel" placeholder="(13) 99999-9999" /><small className="field-help">Usaremos o número para manter apenas sua resposta mais recente.</small></label>
     <label>Observações<textarea name="notes" /></label>
     <button className="button primary" disabled={status === 'loading'}>{status === 'loading' ? 'Enviando...' : 'Confirmar resposta'} <Check size={18} /></button>
-    {status === 'success' && <p className="form-success">Resposta registrada com carinho. Obrigado!</p>}
-    {status === 'error' && <p className="form-error">Não foi possível enviar. Tente novamente.</p>}
+    {status === 'success' && <p className="form-success" role="status">Resposta registrada com carinho. Obrigado! Se responder novamente com o mesmo WhatsApp, manteremos a resposta mais recente.</p>}
+    {status && !['loading', 'success'].includes(status) && <p className="form-error" role="alert">{status}</p>}
   </form>;
 }
 
@@ -94,10 +84,11 @@ export default function WeddingSite() {
   const [customGiftOpen, setCustomGiftOpen] = useState(false);
   const [giftPage, setGiftPage] = useState(1);
   const [notice, setNotice] = useState('');
-  const [paletteId, setPaletteId] = useState(() => localStorage.getItem('wedding-palette') || 'rose');
+  const [busy, setBusy] = useState('');
+  const [reservedGiftIds, setReservedGiftIds] = useState([]);
+  const [paletteId, setPaletteId] = useState('rose');
   const palette = colorPalettes.find(item => item.id === paletteId) || colorPalettes[0];
   const paletteStyle = { '--green': palette.primary, '--gold': palette.accent, '--cream': palette.cream, '--soft': palette.soft, '--ink': palette.ink };
-  const selectPalette = id => { setPaletteId(id); localStorage.setItem('wedding-palette', id); };
   const giftsPerPage = 10;
   const giftPageCount = Math.ceil(gifts.length / giftsPerPage);
   const visibleGifts = gifts.slice((giftPage - 1) * giftsPerPage, giftPage * giftsPerPage);
@@ -111,13 +102,36 @@ export default function WeddingSite() {
     const timer = window.setTimeout(() => setNotice(''), 3500);
     return () => window.clearTimeout(timer);
   }, [notice]);
+  useEffect(() => {
+    Promise.all([loadSiteSettings(), loadReservedGiftIds()]).then(([settings, reserved]) => {
+      setPaletteId(settings.palette || 'rose');
+      setReservedGiftIds(reserved);
+    }).catch(() => {});
+  }, []);
+  useEffect(() => {
+    const modalOpen = Boolean(gift || customGiftOpen || menu);
+    document.body.classList.toggle('overlay-open', modalOpen);
+    const close = event => {
+      if (event.key !== 'Escape') return;
+      setGift(null); setCustomGiftOpen(false); setMenu(false);
+    };
+    document.addEventListener('keydown', close);
+    return () => { document.body.classList.remove('overlay-open'); document.removeEventListener('keydown', close); };
+  }, [gift, customGiftOpen, menu]);
   const nav = [['Home','home'],['Cerimônia','cerimonia'],['Lista de presentes','presentes'],['Confirme sua presença','confirmacao'],['Recados','recados']];
   const heroPhotoStyle = wedding.photos.hero ? { backgroundImage: `linear-gradient(180deg,rgba(31,39,32,.2),rgba(31,39,32,.58)),url(${wedding.photos.hero})` } : {};
   const chooseGift = async (event) => {
     event.preventDefault();
     const payload = Object.fromEntries(new FormData(event.currentTarget));
-    await submitGift({ ...payload, giftId: gift.id, giftName: gift.name, value: gift.price });
-    setGift(null); setNotice('Presente reservado! Em breve entraremos em contato com os dados para finalizar.');
+    setBusy('gift');
+    try {
+      await submitGift({ ...payload, giftId: gift.id, giftName: gift.name, value: gift.price });
+      setReservedGiftIds(current => [...new Set([...current, gift.id])]);
+      setGift(null); setNotice('Presente registrado com sucesso. Obrigado pelo carinho!');
+    } catch (error) {
+      setNotice(error.message || 'Não foi possível registrar o presente. Tente novamente.');
+      if (error.message?.includes('já foi escolhido')) setReservedGiftIds(current => [...new Set([...current, gift.id])]);
+    } finally { setBusy(''); }
   };
   const createCustomGift = event => {
     event.preventDefault();
@@ -129,12 +143,17 @@ export default function WeddingSite() {
   };
   const leaveMessage = async (event) => {
     event.preventDefault(); const formElement = event.currentTarget;
-    await submitMessage(Object.fromEntries(new FormData(formElement)));
-    formElement.reset(); setNotice('Seu recado foi enviado. Obrigado pelo carinho!');
+    setBusy('message');
+    try {
+      await submitMessage(Object.fromEntries(new FormData(formElement)));
+      formElement.reset(); setNotice('Seu recado foi enviado. Obrigado pelo carinho!');
+    } catch (error) { setNotice(error.message || 'Não foi possível enviar o recado. Tente novamente.'); }
+    finally { setBusy(''); }
   };
   return <div className="site-shell" style={paletteStyle}>
-    <header className="topbar"><a className="monogram" href="#home">{wedding.initials}</a><nav className={menu ? 'open' : ''}>{nav.map(([label,id]) => <a key={id} href={`#${id}`} onClick={() => setMenu(false)}>{label}</a>)}</nav><button className="menu-button" onClick={() => setMenu(!menu)} aria-label="Abrir menu">{menu ? <X /> : <Menu />}</button></header>
-    <main>
+    <a className="skip-link" href="#main-content">Ir para o conteúdo</a>
+    <header className="topbar"><a className="monogram" href="#home">{wedding.initials}</a><nav id="site-navigation" className={menu ? 'open' : ''}>{nav.map(([label,id]) => <a key={id} href={`#${id}`} onClick={() => setMenu(false)}>{label}</a>)}</nav><button type="button" className="menu-button" onClick={() => setMenu(!menu)} aria-label={menu ? 'Fechar menu' : 'Abrir menu'} aria-expanded={menu} aria-controls="site-navigation">{menu ? <X /> : <Menu />}</button></header>
+    <main id="main-content">
       <section id="home" className={`hero ${wedding.photos.hero ? 'has-photo' : ''}`}>
         {wedding.photos.hero && <div className="hero-photo" style={heroPhotoStyle} />}
         {!wedding.photos.hero && <div className="hero-photo-note">Sua foto principal será inserida aqui</div>}
@@ -147,14 +166,13 @@ export default function WeddingSite() {
       </section>
       <section id="boas-vindas" className="section intro"><p className="eyebrow">Sejam bem-vindos</p><h2>O nosso grande dia está chegando</h2><p>Criamos este site para compartilhar cada detalhe desse momento tão especial. Esperamos celebrar o amor ao lado de vocês.</p><Countdown /></section>
       <section id="cerimonia" className="ceremony"><div className="ceremony-card"><FloralCorner className="floral-top" /><FloralCorner className="floral-bottom" /><CalendarDays /><p className="eyebrow">Reserve esta data</p><h2>Cerimônia & celebração</h2><strong>{wedding.dateLabel} · {wedding.timeLabel}</strong><p className="venue-details"><span className="venue-name">{wedding.venue}</span><span className="venue-address">{wedding.address}</span></p><a className="button light" href={wedding.mapUrl} target="_blank" rel="noreferrer"><MapPin size={18} /> Traçar rota</a></div><div className="ceremony-map"><iframe title={`Mapa — ${wedding.venue}`} src="https://www.google.com/maps?q=-24.0154444,-46.4027778&z=16&output=embed" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen /></div></section>
-      <section id="presentes" className="section gifts-section"><p className="eyebrow">Um gesto de carinho</p><div className="gifts-heading"><div><h2>Lista de presentes</h2><p className="section-lead">Sua presença é o maior presente. Mas, se desejar nos presentear, preparamos algumas ideias.</p></div><button className="button create-gift-button" onClick={() => setCustomGiftOpen(true)}><Gift size={19} /> Crie seu Presente</button></div><div className="gift-grid">{visibleGifts.map(item => <article className="gift-card" key={item.id}><div className="gift-art gift-figure" role="img" aria-label={item.name}>{item.emoji}</div><div><h3>{item.name}</h3><strong>{money.format(item.price)}</strong><button className="text-button" onClick={() => setGift(item)}>Presentear <Gift size={16} /></button></div></article>)}</div><nav className="gift-pagination" aria-label="Páginas da lista de presentes"><button disabled={giftPage === 1} onClick={() => changeGiftPage(giftPage - 1)}>Anterior</button>{Array.from({ length: giftPageCount }, (_, index) => index + 1).map(page => <button key={page} className={page === giftPage ? 'active' : ''} aria-current={page === giftPage ? 'page' : undefined} onClick={() => changeGiftPage(page)}>{page}</button>)}<button disabled={giftPage === giftPageCount} onClick={() => changeGiftPage(giftPage + 1)}>Próxima</button></nav></section>
+      <section id="presentes" className="section gifts-section"><p className="eyebrow">Um gesto de carinho</p><div className="gifts-heading"><div><h2>Lista de presentes</h2><p className="section-lead">Sua presença é o maior presente. Mas, se desejar nos presentear, preparamos algumas ideias.</p></div><button type="button" className="button create-gift-button" onClick={() => setCustomGiftOpen(true)}><Gift size={19} /> Crie seu Presente</button></div><div className="gift-grid">{visibleGifts.map(item => { const reserved = reservedGiftIds.includes(item.id); return <article className={`gift-card ${reserved ? 'is-reserved' : ''}`} key={item.id}><div className="gift-art gift-figure" role="img" aria-label={item.name}>{item.emoji}</div><div><h3>{item.name}</h3><strong>{money.format(item.price)}</strong><button type="button" className="text-button" disabled={reserved} onClick={() => setGift(item)}>{reserved ? 'Já escolhido' : 'Presentear'} <Gift size={16} /></button></div></article>; })}</div><nav className="gift-pagination" aria-label="Páginas da lista de presentes"><button type="button" aria-label="Página anterior" disabled={giftPage === 1} onClick={() => changeGiftPage(giftPage - 1)}>Anterior</button>{Array.from({ length: giftPageCount }, (_, index) => index + 1).map(page => <button type="button" key={page} className={page === giftPage ? 'active' : ''} aria-current={page === giftPage ? 'page' : undefined} onClick={() => changeGiftPage(page)}>{page}</button>)}<button type="button" aria-label="Próxima página" disabled={giftPage === giftPageCount} onClick={() => changeGiftPage(giftPage + 1)}>Próxima</button></nav></section>
       <section id="confirmacao" className="section rsvp"><div><p className="eyebrow">Esperamos por você</p><h2>Confirme sua presença</h2><p>Para prepararmos tudo com muito cuidado, sua confirmação será registrada diretamente em nossa lista.</p><p className="rsvp-deadline"><CalendarDays size={18} /><span>Confirme sua presença até <strong>20/10/2026</strong></span></p></div><RsvpForm /></section>
-      <section id="recados" className="section messages"><p className="eyebrow">Palavras que ficam</p><h2>Deixe um recado</h2><form className="message-form" onSubmit={leaveMessage}><input required name="name" placeholder="Seu nome" /><textarea required name="message" placeholder="Escreva sua mensagem para os noivos" /><button className="button primary">Enviar recado <Send size={17} /></button></form></section>
+      <section id="recados" className="section messages"><p className="eyebrow">Palavras que ficam</p><h2>Deixe um recado</h2><form className="message-form" onSubmit={leaveMessage}><label className="sr-only" htmlFor="message-name">Seu nome</label><input id="message-name" required name="name" autoComplete="name" placeholder="Seu nome" /><label className="sr-only" htmlFor="message-text">Mensagem para os noivos</label><textarea id="message-text" required name="message" placeholder="Escreva sua mensagem para os noivos" /><button className="button primary" disabled={busy === 'message'}>{busy === 'message' ? 'Enviando recado...' : 'Enviar recado'} <Send size={17} /></button></form></section>
     </main>
     <footer><span>{wedding.initials}</span><p>Feito com amor para celebrar esse dia.</p><a href="#/admin">Área dos noivos</a>{isDemoMode && <small>Modo demonstração</small>}<small className="developer-credit">Desenvolvido por Allyson Bastos</small></footer>
-    {gift && <div className="modal-backdrop" onMouseDown={() => setGift(null)}><div className="modal" onMouseDown={e => e.stopPropagation()}><button className="modal-close" onClick={() => setGift(null)}><X /></button><span className="modal-gift-figure">{gift.emoji}</span><p className="eyebrow">Você escolheu</p><h2>{gift.name}</h2><strong>{money.format(gift.price)}</strong><div className="pix-box"><QRCodeSVG value={pixPayload} size={210} level="M" /><p>Abra o aplicativo do seu banco e escaneie o QR Code</p><button type="button" className="text-button" onClick={() => { navigator.clipboard.writeText(pixPayload); setNotice('Código PIX copiado!'); }}>Copiar código PIX</button></div><form onSubmit={chooseGift}><label>Nome de quem está presenteando *<input required name="name" placeholder="Digite seu nome completo" /></label><label>Mensagem (opcional)<textarea name="message" placeholder="Uma mensagem para os noivos" /></label><button className="button primary">Já fiz o PIX</button></form><small>O valor e a identificação deste presente já estão preenchidos no QR Code.</small></div></div>}
-    {customGiftOpen && <div className="modal-backdrop" onMouseDown={() => setCustomGiftOpen(false)}><div className="modal custom-gift-modal" onMouseDown={event => event.stopPropagation()}><button className="modal-close" onClick={() => setCustomGiftOpen(false)}><X /></button><span className="modal-gift-figure">🎁</span><p className="eyebrow">Presente personalizado</p><h2>Crie seu presente</h2><p>Escolha como deseja nos presentear e informe o valor do seu carinho.</p><form onSubmit={createCustomGift}><label>Nome do presente *<input required name="name" maxLength="80" placeholder="Ex.: Um jantar especial" /></label><label>Valor do presente *<div className="money-input"><span>R$</span><input required name="price" type="number" min="1" step="0.01" inputMode="decimal" placeholder="0,00" /></div></label><button className="button primary">Gerar PIX deste presente</button></form></div></div>}
-    {notice && <div className="toast" onClick={() => setNotice('')}><Check /> {notice}</div>}
-    <PalettePicker selected={paletteId} onSelect={selectPalette} />
+    {gift && <div className="modal-backdrop" onMouseDown={() => setGift(null)}><div className="modal" role="dialog" aria-modal="true" aria-labelledby="gift-modal-title" onMouseDown={e => e.stopPropagation()}><button type="button" className="modal-close" onClick={() => setGift(null)} aria-label="Fechar janela do presente"><X /></button><span className="modal-gift-figure">{gift.emoji}</span><p className="eyebrow">Você escolheu</p><h2 id="gift-modal-title">{gift.name}</h2><strong>{money.format(gift.price)}</strong><div className="pix-box"><QRCodeSVG value={pixPayload} size={210} level="M" aria-label={`QR Code PIX no valor de ${money.format(gift.price)}`} /><p>Abra o aplicativo do seu banco e escaneie o QR Code</p><button type="button" className="text-button" onClick={() => { navigator.clipboard.writeText(pixPayload); setNotice('Código PIX copiado!'); }}>Copiar código PIX</button></div><form onSubmit={chooseGift}><label>Nome de quem está presenteando *<input required name="name" autoComplete="name" autoFocus placeholder="Digite seu nome completo" /></label><label>Mensagem (opcional)<textarea name="message" placeholder="Uma mensagem para os noivos" /></label><button className="button primary" disabled={busy === 'gift'}>{busy === 'gift' ? 'Registrando presente...' : 'Já fiz o PIX'}</button></form><small>O valor e a identificação deste presente já estão preenchidos no QR Code.</small></div></div>}
+    {customGiftOpen && <div className="modal-backdrop" onMouseDown={() => setCustomGiftOpen(false)}><div className="modal custom-gift-modal" role="dialog" aria-modal="true" aria-labelledby="custom-gift-title" onMouseDown={event => event.stopPropagation()}><button type="button" className="modal-close" onClick={() => setCustomGiftOpen(false)} aria-label="Fechar janela de presente personalizado"><X /></button><span className="modal-gift-figure">🎁</span><p className="eyebrow">Presente personalizado</p><h2 id="custom-gift-title">Crie seu presente</h2><p>Escolha como deseja nos presentear e informe o valor do seu carinho.</p><form onSubmit={createCustomGift}><label>Nome do presente *<input required name="name" maxLength="80" autoFocus placeholder="Ex.: Um jantar especial" /></label><label>Valor do presente *<div className="money-input"><span>R$</span><input required name="price" type="number" min="1" step="0.01" inputMode="decimal" placeholder="0,00" /></div></label><button className="button primary">Gerar PIX deste presente</button></form></div></div>}
+    {notice && <div className="toast" role="status" aria-live="polite" onClick={() => setNotice('')}><Check /> {notice}</div>}
   </div>;
 }

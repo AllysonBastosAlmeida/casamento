@@ -120,7 +120,7 @@ export const loadExcelRsvps = async () => {
     }
     return '';
   };
-  return rows.slice(1).filter(row => row.some(Boolean)).map((row, index) => ({
+  const responses = rows.slice(1).filter(row => row.some(Boolean)).map((row, index) => ({
     id: `excel-${value(row, 'id') || index + 1}`,
     // O Forms usa a coluna F para "Nome Completo". O fallback por posição
     // protege contra variações invisíveis no cabeçalho exportado pelo Excel.
@@ -134,6 +134,14 @@ export const loadExcelRsvps = async () => {
     createdAt: value(row, 'horadaconclusao', 'horadeinicio'),
     source: 'excel',
   }));
+  const latestByPhone = new Map();
+  const withoutPhone = [];
+  responses.forEach(response => {
+    const phone = String(response.phone || '').replace(/\D/g, '');
+    if (phone) latestByPhone.set(phone, response);
+    else withoutPhone.push(response);
+  });
+  return [...withoutPhone, ...latestByPhone.values()];
 };
 
 export const hasMicrosoftSession = async () => {

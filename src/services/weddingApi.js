@@ -55,6 +55,24 @@ export const submitGift = async (payload) =>
 export const submitMessage = async (payload) =>
   (await request('createMessage', payload)) || saveLocalRecord('messages', payload);
 
+export const loadReservedGiftIds = async () => {
+  const remote = await request('giftAvailability', {});
+  if (remote) return remote.giftIds || [];
+  return (readLocal().gifts || []).map(item => item.giftId).filter(Boolean);
+};
+
+export const loadSiteSettings = async () => {
+  const remote = await request('settings', {});
+  return remote?.settings || { palette: localStorage.getItem('wedding-palette') || 'rose' };
+};
+
+export const saveSiteSettings = async (payload, accessToken) => {
+  const remote = await request('updateSettings', payload, accessToken);
+  if (remote) return remote.settings;
+  localStorage.setItem('wedding-palette', payload.palette);
+  return payload;
+};
+
 export const loadDashboard = async accessToken => {
   const local = readLocal();
   const remote = await request('dashboard', {}, accessToken);

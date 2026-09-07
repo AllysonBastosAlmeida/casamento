@@ -40,7 +40,16 @@ export async function onRequest(context) {
   if (request.method !== 'POST' || !ALLOWED_ORIGINS.has(origin)) return json({ error: 'Requisição não permitida.' }, 403, origin);
   try {
     const { action, payload = {} } = await request.json();
-    const adminAction = ['dashboard', 'createGuest', 'updateGuest', 'deleteGuest'].includes(action);
+    if (action === 'giftAvailability') {
+      const result = await env.casamento_data.prepare("SELECT payload FROM records WHERE collection = 'gifts'").all();
+      const giftIds = [...new Set(result.results.map(row => parsePayload(row.payload)?.giftId).filter(Boolean))];
+      return json({ giftIds }, 200, origin);
+    }
+    if (action === 'settings') {
+      const row = await env.casamento_data.prepare("SELECT payload FROM records WHERE id = 'site-settings' AND collection = 'settings'").first();
+      return json({ settings: parsePayload(row?.payload) || { palette: 'rose' } }, 200, origin);
+    }
+    const adminAction = ['dashboard', 'createGuest', 'updateGuest', 'deleteGuest', 'updateSettings'].includes(action);
     if (adminAction && !(await authorize(request))) return json({ error: 'Acesso administrativo não autorizado.' }, 401, origin);
 
     if (action === 'dashboard') {
@@ -56,6 +65,13 @@ export async function onRequest(context) {
       const remoteGuestIds = new Set(data.guests.map(guest => guest.id));
       data.guests.push(...INITIAL_GUESTS.filter(guest => !remoteGuestIds.has(guest.id) && !deletedGuestIds.has(guest.id)));
       return json({ data }, 200, origin);
+    }
+    if (action === 'updateSettings') {
+      const allowedPalettes = new Set(['rose', 'sage', 'blue', 'lavender', 'terracotta', 'champagne', 'olive', 'burgundy', 'navy', 'classic']);
+      const record = { palette: allowedPalettes.has(payload.palette) ? payload.palette : 'rose' };
+      await env.casamento_data.prepare("INSERT OR REPLACE INTO records (id, collection, payload, created_at) VALUES ('site-settings', 'settings', ?, ?)")
+        .bind(JSON.stringify(record), new Date().toISOString()).run();
+      return json({ settings: record }, 200, origin);
     }
     if (action === 'deleteGuest') {
       const id = String(payload.id || '');
@@ -89,7 +105,12 @@ export async function onRequest(context) {
     if (action === 'createGift' && (!payload.giftName?.trim() || !Number.isFinite(Number(payload.value)) || Number(payload.value) <= 0)) {
       return json({ error: 'Presente ou valor inválido.' }, 400, origin);
     }
-    const id = globalThis.crypto.randomUUID();
+    if (action === 'createGift' && payload.giftId) {
+      const existing = await env.casamento_data.prepare("SELECT id FROM records WHERE collection = 'gifts' AND json_extract(payload, '$.giftId') = ? LIMIT 1")
+        .bind(String(payload.giftId)).first();
+      if (existing) return json({ error: 'Este presente já foi escolhido por outra pessoa.' }, 409, origin);
+    }
+    const id = action === 'createGift' && payload.giftId ? `gift:${String(payload.giftId)}` : globalThis.crypto.randomUUID();
     const createdAt = new Date().toISOString();
     await env.casamento_data.prepare('INSERT INTO records (id, collection, payload, created_at) VALUES (?, ?, ?, ?)')
       .bind(id, collection, JSON.stringify(payload), createdAt).run();
