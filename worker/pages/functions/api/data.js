@@ -72,7 +72,9 @@ export async function onRequest(context) {
       const name = String(payload.name || '').trim();
       const side = ['Noivo', 'Noiva', 'Ambos'].includes(payload.side) ? payload.side : 'Noivo';
       if (!id || !name) return json({ error: 'Convidado invÃ¡lido.' }, 400, origin);
-      const record = { name, side };
+      const confirmed = Boolean(payload.confirmed);
+      const confirmedAt = confirmed ? String(payload.confirmedAt || new Date().toISOString()) : '';
+      const record = { name, side, confirmed, confirmedAt };
       await env.casamento_data.batch([
         env.casamento_data.prepare("DELETE FROM records WHERE id = ? AND collection = 'guest_deletions'").bind(id),
         env.casamento_data.prepare("INSERT OR REPLACE INTO records (id, collection, payload, created_at) VALUES (?, 'guests', ?, ?)")
