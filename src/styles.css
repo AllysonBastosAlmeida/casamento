@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Italiana&family=Montserrat:wght@400;500;600;700&display=swap');
 
-:root { color: #3c4038; background: #f7f3ec; font-family: Montserrat, sans-serif; font-synthesis: none; --green:#9c6f79; --cream:#fffafa; --gold:#d7a9b2; --ink:#4b3c40; --soft:#f7e9ec; }
+:root { color:#3c4038; background:#f7f3ec; font-family:Montserrat,sans-serif; font-synthesis:weight; --green:#9c6f79; --cream:#fffafa; --gold:#d7a9b2; --ink:#4b3c40; --soft:#f7e9ec; }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; min-width: 320px; }
@@ -8,7 +8,7 @@ button,input,textarea,select { font: inherit; }
 button,a { -webkit-tap-highlight-color: transparent; }
 a { color: inherit; text-decoration: none; }
 h1,h2,h3,p { margin-top: 0; }
-h1,h2,h3,.monogram,footer>span { font-family:Montserrat,Arial,sans-serif; font-weight:600; letter-spacing:-.035em; }
+h1,h2,h3,.monogram,footer>span { font-family:Italiana,Georgia,serif; font-weight:400; }
 h2 { color: var(--ink); font-size: clamp(2.25rem,5vw,4.2rem); line-height: 1.05; margin-bottom: 1.25rem; }
 .site-shell { background:var(--cream); color:var(--ink); overflow: hidden; transition:background .35s ease,color .35s ease; }
 .section p:not(.eyebrow),.ceremony-card p:not(.eyebrow) { color:#4f4949; }
@@ -43,7 +43,7 @@ h2 { color: var(--ink); font-size: clamp(2.25rem,5vw,4.2rem); line-height: 1.05;
 .countdown { display: grid; gap: 1px; grid-template-columns: repeat(4,1fr); margin-top: 55px; }
 .countdown div { border-left: 1px solid #d8d0c3; display: grid; padding: 8px 32px; }
 .countdown div:last-child { border-right: 1px solid #d8d0c3; }
-.countdown strong { color:var(--green); font-family:Montserrat,Arial,sans-serif; font-size:clamp(2.4rem,5vw,4.4rem); font-weight:500; }
+.countdown strong { color:var(--green); font-family:Italiana,serif; font-size:clamp(2.4rem,5vw,4.4rem); font-weight:400; }
 .countdown span { font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; }
 .story { align-items: center; display: grid; gap: clamp(40px,8vw,100px); grid-template-columns: 1.1fr .9fr; }
 .story-photos { min-height: 630px; position: relative; }
@@ -147,17 +147,11 @@ footer>span { font-size: 2.2rem; } footer p { font-family: Georgia,serif; } foot
   .modal{max-height:calc(100svh - 24px);padding:35px 20px}.modal h2{font-size:2rem}.pix-box svg{height:auto;max-width:190px;width:65vw}
   .admin-header-actions{width:100%}.admin-header-actions .button{flex:1;font-size:.68rem;padding:11px 8px}.guest-split{grid-template-columns:1fr}.compact-guest-list{max-height:320px}.shared-guests>div{grid-template-columns:1fr}
   .palette-toggle span{display:none}.palette-toggle{height:48px;padding:0;width:48px}.toast{bottom:76px;font-size:.8rem;width:calc(100% - 28px)}
+  .site-shell main p:not(.eyebrow),.site-shell main a,.site-shell main input,.site-shell main textarea,.site-shell main select{font-weight:500}.site-shell main label,.site-shell main legend,.site-shell main .eyebrow{font-weight:700}.site-shell main h2,.site-shell main h3,.hero h1,.hero-date{font-weight:700}
 }
 
 @media (max-width:420px){
   .hero h1{font-size:1.75rem;letter-spacing:.055em}.hero-date{font-size:.92rem}.hero::after{height:30px}
   .stat-grid{grid-template-columns:1fr}.gift-pagination button:first-child,.gift-pagination button:last-child{flex-basis:42%}.gift-card h3{font-size:.6rem}.gift-card strong{font-size:.59rem}.gift-card .text-button{font-size:.57rem}
   .admin-shell aside{gap:12px}.admin-brand span{display:none}
-}
-
-/* Tipografia global mais encorpada e legível em qualquer tela */
-body,button,input,textarea,select,.site-shell p,.site-shell a,.site-shell label,.site-shell legend,
-.palette-title strong,.stat-grid strong,.custom-gift-modal>p:not(.eyebrow),.ceremony-card p:not(.eyebrow),
-.intro>p:not(.eyebrow),.section-lead,.story-copy>p:not(.eyebrow),footer p {
-  font-family:Montserrat,Arial,sans-serif;
 }
