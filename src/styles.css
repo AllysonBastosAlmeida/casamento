@@ -33,7 +33,7 @@ h2 { color: var(--ink); font-size: clamp(2.25rem,5vw,4.2rem); line-height: 1.05;
 .botanical-art { color:#fff; height:290px; left:-92px; overflow:visible; position:absolute; top:-70px; width:170px; z-index:2; }.botanical-art g { stroke-width:2.2; }.botanical-art .stem { stroke-width:2.8; }.botanical-art .fine { stroke-width:2; }
 .eyebrow { color:var(--green); font-size:.68rem; font-weight:700; letter-spacing:.3em; text-transform:uppercase; }
 .hero h1 { color:#fff; font-family:Italiana,Georgia,serif; font-size:clamp(2.2rem,4.2vw,4.1rem); font-weight:400; letter-spacing:.08em; line-height:1.15; margin:0 0 18px; max-width:1200px; text-shadow:0 3px 16px rgba(0,0,0,.9),0 1px 2px #000; text-transform:uppercase; }
-.hero-date { color:#fff; font-size:clamp(1rem,1.7vw,1.45rem); font-weight:700; letter-spacing:.12em; text-shadow:0 2px 9px rgba(0,0,0,.9); white-space:pre; }
+.hero-date { color:#fff; font-family:Italiana,Georgia,serif; font-size:clamp(1.15rem,1.9vw,1.65rem); font-weight:400; letter-spacing:.14em; text-shadow:0 2px 9px rgba(0,0,0,.9); white-space:pre; }
 .date-line { align-items: center; display: flex; font-size: .78rem; gap: 18px; letter-spacing: .2em; text-transform: uppercase; }
 .date-line span { background: currentColor; height: 1px; width: 55px; }
 .scroll-cue { align-items: center; bottom: 20px; display: flex; flex-direction: column; position: absolute; z-index: 2; }
@@ -181,7 +181,7 @@ footer>span { font-size: 2.2rem; } footer p { font-family: Georgia,serif; } foot
   .site-shell main .gift-pagination button.active{background:#8e5b67;color:#fff!important}
   .site-shell main .gift-pagination button:disabled{color:#71696b!important;opacity:.7}
   .hero h1{color:#fff!important;font-family:Italiana,Georgia,serif!important;font-weight:400!important;letter-spacing:.07em;text-shadow:0 3px 16px #000,0 1px 3px #000}
-  .hero-date{color:#fff!important;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-weight:700!important}
+  .hero-date{color:#fff!important;font-family:Italiana,Georgia,serif!important;font-weight:400!important;letter-spacing:.13em;text-shadow:0 2px 10px #000}
   .site-shell main .intro>p:not(.eyebrow),
   .site-shell main .gifts-section .section-lead,
   .site-shell main .rsvp>div>p:not(.eyebrow),
