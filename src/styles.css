@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Italiana&family=Montserrat:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Italiana&family=Montserrat:wght@400;500;600;700&display=swap');
 
 :root { color: #3c4038; background: #f7f3ec; font-family: Montserrat, sans-serif; font-synthesis: none; --green:#9c6f79; --cream:#fffafa; --gold:#d7a9b2; --ink:#4b3c40; --soft:#f7e9ec; }
 * { box-sizing: border-box; }
@@ -11,6 +11,7 @@ h1,h2,h3,p { margin-top: 0; }
 h1,h2,h3,.monogram,footer>span { font-family: Italiana, Georgia, serif; font-weight: 400; }
 h2 { color: var(--ink); font-size: clamp(2.25rem,5vw,4.2rem); line-height: 1.05; margin-bottom: 1.25rem; }
 .site-shell { background:var(--cream); color:var(--ink); overflow: hidden; transition:background .35s ease,color .35s ease; }
+.section p:not(.eyebrow),.ceremony-card p:not(.eyebrow) { color:#4f4949; }
 .topbar { align-items: center; background: linear-gradient(180deg,rgba(17,27,29,.5),transparent); color:#fff; display: flex; height: 92px; justify-content: center; left: 0; padding: 0 clamp(20px,5vw,72px); position: absolute; right: 0; top: 0; z-index: 30; }
 .monogram { display:none; }
 .topbar nav { display: flex; gap: clamp(20px,2.8vw,48px); }
@@ -24,15 +25,15 @@ h2 { color: var(--ink); font-size: clamp(2.25rem,5vw,4.2rem); line-height: 1.05;
 .hero-photo-note { border:1px solid rgba(255,255,255,.6); font-size:.62rem; left:25px; letter-spacing:.13em; padding:8px 12px; position:absolute; text-transform:uppercase; top:110px; }
 .petal-layer { inset:0; overflow:hidden; pointer-events:none; position:absolute; z-index:1; }.petal-layer i { animation:petal-fall var(--petal-duration) linear var(--petal-delay) infinite; background:linear-gradient(145deg,rgba(255,255,255,.9),rgba(244,183,198,.82)); border-radius:90% 15% 80% 20%; box-shadow:0 1px 3px rgba(73,45,50,.12); height:calc(var(--petal-size) * 1.45); left:var(--petal-left); opacity:0; position:absolute; top:-30px; transform-origin:50% 100%; width:var(--petal-size); }
 @keyframes petal-fall { 0% { opacity:0; transform:translate3d(0,-10vh,0) rotate(0deg) rotateY(0deg); } 7% { opacity:.72; } 45% { opacity:.72; transform:translate3d(var(--petal-drift),48vh,0) rotate(175deg) rotateY(120deg); } 78% { opacity:.62; transform:translate3d(var(--petal-end),108vh,0) rotate(350deg) rotateY(235deg); } 82%,100% { opacity:0; transform:translate3d(var(--petal-end),112vh,0) rotate(365deg) rotateY(245deg); } }
-.hero-identity { align-items:center; display:flex; flex-direction:column; margin-top:34vh; position:relative; z-index:2; }
+.hero-identity { align-items:center; background:linear-gradient(90deg,transparent,rgba(15,18,17,.42) 18%,rgba(15,18,17,.42) 82%,transparent); display:flex; flex-direction:column; margin-top:34vh; padding:22px clamp(36px,9vw,140px); position:relative; z-index:2; }
 .hero-monogram { border-right:4px solid #fff; border-top:4px solid #fff; height:225px; margin-bottom:43px; position:relative; width:250px; }
 .hero-monogram::after { border-bottom:4px solid #fff; bottom:0; content:''; height:4px; position:absolute; right:0; width:78%; }
 .hero-monogram::before { border-left:4px solid #fff; content:''; height:70%; position:absolute; right:100%; top:0; }
 .hero-monogram span { align-items:center; display:flex; font-size:3.35rem; font-weight:300; inset:0; justify-content:center; letter-spacing:.13em; padding-left:16px; position:absolute; }
 .botanical-art { color:#fff; height:290px; left:-92px; overflow:visible; position:absolute; top:-70px; width:170px; z-index:2; }.botanical-art g { stroke-width:2.2; }.botanical-art .stem { stroke-width:2.8; }.botanical-art .fine { stroke-width:2; }
-.eyebrow { color: var(--gold); font-size: .68rem; font-weight: 600; letter-spacing: .3em; text-transform: uppercase; }
-.hero h1 { color:#fff; font-family:Montserrat,sans-serif; font-size:clamp(1.8rem,3.3vw,3.25rem); font-weight:400; letter-spacing:.13em; line-height:1.15; margin:0 0 18px; max-width:1200px; text-transform:uppercase; }
-.hero-date { font-size:clamp(1rem,1.7vw,1.45rem); font-weight:600; letter-spacing:.12em; white-space:pre; }
+.eyebrow { color:var(--green); font-size:.68rem; font-weight:700; letter-spacing:.3em; text-transform:uppercase; }
+.hero h1 { color:#fff; font-family:Montserrat,sans-serif; font-size:clamp(2rem,3.7vw,3.7rem); font-weight:700; letter-spacing:.11em; line-height:1.15; margin:0 0 18px; max-width:1200px; text-shadow:0 3px 16px rgba(0,0,0,.9),0 1px 2px #000; text-transform:uppercase; }
+.hero-date { color:#fff; font-size:clamp(1rem,1.7vw,1.45rem); font-weight:700; letter-spacing:.12em; text-shadow:0 2px 9px rgba(0,0,0,.9); white-space:pre; }
 .date-line { align-items: center; display: flex; font-size: .78rem; gap: 18px; letter-spacing: .2em; text-transform: uppercase; }
 .date-line span { background: currentColor; height: 1px; width: 55px; }
 .scroll-cue { align-items: center; bottom: 20px; display: flex; flex-direction: column; position: absolute; z-index: 2; }
@@ -74,7 +75,7 @@ h2 { color: var(--ink); font-size: clamp(2.25rem,5vw,4.2rem); line-height: 1.05;
 .gift-figure { font-size:4.5rem; text-shadow:0 8px 20px rgba(80,55,55,.12); }.gift-card:hover .gift-figure { font-size:4.8rem; }
 .gift-card>div:last-child { padding:18px; }
 .gift-card h3 { font-family:Montserrat,sans-serif; font-size:.88rem; font-weight:500; letter-spacing:-.015em; line-height:1.4; min-height:40px; }
-.gift-card strong { color: var(--gold); display: block; margin-bottom: 18px; }
+.gift-card strong { color:var(--green); display:block; font-weight:700; margin-bottom:18px; }
 .gift-pagination { align-items:center; display:flex; gap:7px; justify-content:center; margin-top:42px; }.gift-pagination button { background:#fff; border:1px solid #dedbd5; color:var(--ink); cursor:pointer; min-height:38px; min-width:38px; padding:8px 11px; }.gift-pagination button.active { background:var(--green); border-color:var(--green); color:#fff; }.gift-pagination button:disabled { cursor:not-allowed; opacity:.4; }
 .text-button { align-items: center; background: none; border: 0; border-bottom: 1px solid #aaa292; color: var(--green); cursor: pointer; display: flex; gap: 8px; padding: 8px 0; }
 .rsvp { align-items: start; display: grid; gap: 80px; grid-template-columns: .8fr 1.2fr; max-width: 1100px; }
@@ -86,7 +87,7 @@ h2 { color: var(--ink); font-size: clamp(2.25rem,5vw,4.2rem); line-height: 1.05;
 label,fieldset legend { color: #555b51; font-size: .7rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
 input,textarea,select { background: transparent; border: 0; border-bottom: 1px solid #b9b8ae; border-radius: 0; color: var(--ink); outline: none; padding: 12px 2px; width: 100%; }
 textarea { min-height: 76px; resize: vertical; }
-.field-help { color:#8b8d86; display:block; font-size:.62rem; font-weight:400; letter-spacing:0; line-height:1.35; margin-top:7px; text-transform:none; }
+.field-help { color:#5f5c59; display:block; font-size:.62rem; font-weight:500; letter-spacing:0; line-height:1.35; margin-top:7px; text-transform:none; }
 input:focus,textarea:focus,select:focus { border-color: var(--gold); }
 fieldset { border: 0; margin: 0; padding: 0; }
 .choice-row { display: flex; gap: 12px; margin-top: 12px; }
@@ -135,7 +136,7 @@ footer>span { font-size: 2.2rem; } footer p { font-family: Georgia,serif; } foot
 }
 
 @media (max-width:600px){
-  .site-shell{color:#332b2d}.site-shell h2,.site-shell h3{color:#332b2d;font-family:Montserrat,Arial,sans-serif;font-weight:600;letter-spacing:-.025em}.site-shell h2{font-size:clamp(1.85rem,9vw,2.65rem);line-height:1.15}.eyebrow{font-weight:700}.intro>p:not(.eyebrow),.section-lead,.rsvp>div>p:not(.eyebrow),.ceremony-card p:not(.eyebrow){color:#4f4949;font-family:Montserrat,Arial,sans-serif;line-height:1.65}
+  .site-shell{color:#2d2729}.site-shell h2,.site-shell h3{color:#2d2729;font-family:Montserrat,Arial,sans-serif;font-weight:700;letter-spacing:-.025em}.site-shell h2{font-size:clamp(1.85rem,9vw,2.65rem);line-height:1.15}.site-shell .eyebrow{color:#674751;font-weight:700}.site-shell .section p:not(.eyebrow),.site-shell .ceremony-card p:not(.eyebrow),.site-shell label,.site-shell fieldset legend,.site-shell input,.site-shell textarea,.site-shell select{color:#373033}.intro>p:not(.eyebrow),.section-lead,.rsvp>div>p:not(.eyebrow),.ceremony-card p:not(.eyebrow){font-family:Montserrat,Arial,sans-serif;font-weight:500;line-height:1.65}.field-help{color:#514a4c}.hero-identity{border-radius:12px;margin-top:38vh;padding:18px 20px;width:calc(100% - 12px)}.hero h1{font-weight:700;text-shadow:0 3px 16px #000,0 1px 2px #000}.hero-date{text-shadow:0 2px 10px #000}
   .hero.has-photo{background-position:46% center}.hero-identity{margin-top:38vh}.hero h1{line-height:1.28}.hero-date{letter-spacing:.09em}
   .intro>p:not(.eyebrow),.section-lead{font-size:1rem;line-height:1.65}
   .countdown{gap:16px 0;grid-template-columns:repeat(2,1fr);margin-top:38px}.countdown div{padding:8px 12px}.countdown div:nth-child(odd){border-left:1px solid #d8d0c3}.countdown div:nth-child(even){border-right:1px solid #d8d0c3}.countdown strong{font-size:2.8rem}
@@ -149,7 +150,7 @@ footer>span { font-size: 2.2rem; } footer p { font-family: Georgia,serif; } foot
 }
 
 @media (max-width:420px){
-  .hero h1{font-size:1.55rem;letter-spacing:.07em}.hero-date{font-size:.88rem}.hero::after{height:30px}
+  .hero h1{font-size:1.75rem;letter-spacing:.055em}.hero-date{font-size:.92rem}.hero::after{height:30px}
   .stat-grid{grid-template-columns:1fr}.gift-pagination button:first-child,.gift-pagination button:last-child{flex-basis:42%}.gift-card h3{font-size:.6rem}.gift-card strong{font-size:.59rem}.gift-card .text-button{font-size:.57rem}
   .admin-shell aside{gap:12px}.admin-brand span{display:none}
 }
