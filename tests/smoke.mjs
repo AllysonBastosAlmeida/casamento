@@ -24,7 +24,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 900 }, { name: '
       const style = element.ownerDocument.defaultView.getComputedStyle(element);
       return { color: style.color, weight: Number(style.fontWeight), opacity: style.opacity };
     });
-    if (copyStyle.color !== 'rgb(36, 31, 32)' || copyStyle.weight < 700 || copyStyle.opacity !== '1') {
+    if (copyStyle.color !== 'rgb(63, 56, 58)' || copyStyle.weight !== 500 || copyStyle.opacity !== '1') {
       throw new Error(`mobile: contraste do texto descritivo inválido (${JSON.stringify(copyStyle)}).`);
     }
   }
