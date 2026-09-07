@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CalendarDays, Check, ChevronDown, Gift, MapPin, Menu, Palette, Send, X } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { colorPalettes, gifts, pix, wedding } from '../config.js';
@@ -79,9 +79,6 @@ function RsvpForm() {
 
 export default function WeddingSite() {
   const [menu, setMenu] = useState(false);
-  const [heroTilt, setHeroTilt] = useState({ x: 0, y: 0 });
-  const [motionEnabled, setMotionEnabled] = useState(false);
-  const [needsMotionPermission] = useState(() => typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function');
   const [gift, setGift] = useState(null);
   const [customGiftOpen, setCustomGiftOpen] = useState(false);
   const [giftPage, setGiftPage] = useState(1);
@@ -103,33 +100,8 @@ export default function WeddingSite() {
     const timer = window.setTimeout(() => setNotice(''), 3500);
     return () => window.clearTimeout(timer);
   }, [notice]);
-  useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
-    const moveWithPointer = event => {
-      const x = ((event.clientX / window.innerWidth) - 0.5) * 24;
-      const y = ((event.clientY / window.innerHeight) - 0.5) * 18;
-      setHeroTilt({ x, y });
-    };
-    const moveWithPhone = event => {
-      const x = Math.max(-1, Math.min(1, Number(event.gamma || 0) / 28)) * 18;
-      const y = Math.max(-1, Math.min(1, (Number(event.beta || 45) - 45) / 35)) * 13;
-      setHeroTilt({ x, y });
-    };
-    window.addEventListener('pointermove', moveWithPointer, { passive: true });
-    if (!needsMotionPermission || motionEnabled) window.addEventListener('deviceorientation', moveWithPhone, true);
-    return () => {
-      window.removeEventListener('pointermove', moveWithPointer);
-      window.removeEventListener('deviceorientation', moveWithPhone, true);
-    };
-  }, [motionEnabled, needsMotionPermission]);
-  const enableMotion = async () => {
-    try {
-      const permission = await DeviceOrientationEvent.requestPermission();
-      setMotionEnabled(permission === 'granted');
-    } catch { setMotionEnabled(false); }
-  };
   const nav = [['Home','home'],['Cerimônia','cerimonia'],['Lista de presentes','presentes'],['Confirme sua presença','confirmacao'],['Recados','recados']];
-  const heroPhotoStyle = useMemo(() => wedding.photos.hero ? { backgroundImage: `linear-gradient(180deg,rgba(31,39,32,.2),rgba(31,39,32,.58)),url(${wedding.photos.hero})` } : {}, []);
+  const heroPhotoStyle = wedding.photos.hero ? { backgroundImage: `linear-gradient(180deg,rgba(31,39,32,.2),rgba(31,39,32,.58)),url(${wedding.photos.hero})` } : {};
   const chooseGift = async (event) => {
     event.preventDefault();
     const payload = Object.fromEntries(new FormData(event.currentTarget));
@@ -153,9 +125,8 @@ export default function WeddingSite() {
     <header className="topbar"><a className="monogram" href="#home">{wedding.initials}</a><nav className={menu ? 'open' : ''}>{nav.map(([label,id]) => <a key={id} href={`#${id}`} onClick={() => setMenu(false)}>{label}</a>)}</nav><button className="menu-button" onClick={() => setMenu(!menu)} aria-label="Abrir menu">{menu ? <X /> : <Menu />}</button></header>
     <main>
       <section id="home" className={`hero ${wedding.photos.hero ? 'has-photo' : ''}`}>
-        {wedding.photos.hero && <><div className="hero-depth-bg" style={{ ...heroPhotoStyle, transform: `translate3d(${heroTilt.x}px,${heroTilt.y}px,0) scale(1.055)` }} /><div className="hero-depth-focus" style={heroPhotoStyle} /></>}
+        {wedding.photos.hero && <div className="hero-photo" style={heroPhotoStyle} />}
         {!wedding.photos.hero && <div className="hero-photo-note">Sua foto principal será inserida aqui</div>}
-        {needsMotionPermission && !motionEnabled && <button type="button" className="motion-permission" onClick={enableMotion}>Ativar efeito 3D</button>}
         <div className="petal-layer" aria-hidden="true">{petals.map(petal => <i key={petal.id} style={{ '--petal-left': `${petal.left}%`, '--petal-delay': `${petal.delay}s`, '--petal-duration': `${petal.duration}s`, '--petal-size': `${petal.size}px`, '--petal-drift': `${petal.drift}px`, '--petal-end': `${petal.drift * -0.6}px` }} />)}</div>
         <div className="hero-identity">
           <h1>{wedding.couple}</h1>

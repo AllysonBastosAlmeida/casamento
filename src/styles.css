@@ -19,10 +19,7 @@ h2 { color: var(--ink); font-size: clamp(2.25rem,5vw,4.2rem); line-height: 1.05;
 .menu-button { background: none; border: 0; color: var(--ink); display: none; }
 .hero { align-items: center; background-color:var(--green); background-image:linear-gradient(rgba(25,34,35,.28),rgba(25,31,31,.52)),linear-gradient(160deg,var(--soft) 0 48%,var(--green) 48% 67%,var(--gold) 67%); color:#fff; display: flex; flex-direction: column; height: 100vh; justify-content: center; min-height: 650px; padding: 110px 24px 40px; position: relative; text-align: center; transition:background-color .35s ease; }
 .hero.has-photo { background-image:none; overflow:hidden; }
-.hero-depth-bg,.hero-depth-focus { background-position:center 30%; background-size:cover; inset:0; pointer-events:none; position:absolute; will-change:transform; }
-.hero-depth-bg { transition:transform .18s ease-out; z-index:0; }
-.hero-depth-focus { mask-image:radial-gradient(ellipse 19% 43% at 47% 37%,#000 45%,rgba(0,0,0,.88) 62%,transparent 100%); transform:scale(1.055); z-index:1; }
-.motion-permission { background:rgba(30,39,36,.55); border:1px solid rgba(255,255,255,.7); border-radius:999px; bottom:26px; color:#fff; cursor:pointer; font-size:.62rem; left:24px; letter-spacing:.1em; padding:10px 15px; position:absolute; text-transform:uppercase; z-index:5; }
+.hero-photo { background-position:center 30%; background-size:cover; inset:0; pointer-events:none; position:absolute; z-index:0; }
 .hero::after { background:var(--cream); bottom:-1px; clip-path:polygon(0 48%,2% 35%,4% 44%,7% 31%,10% 43%,13% 36%,16% 49%,20% 39%,23% 46%,27% 32%,30% 43%,34% 38%,38% 51%,42% 36%,46% 45%,50% 29%,54% 44%,58% 35%,62% 47%,66% 30%,70% 40%,74% 32%,78% 46%,82% 35%,86% 42%,90% 31%,94% 44%,97% 35%,100% 45%,100% 100%,0 100%); content:''; height:58px; left:0; position:absolute; right:0; transition:background .35s ease; z-index:3; }
 .hero-photo-note { border:1px solid rgba(255,255,255,.6); font-size:.62rem; left:25px; letter-spacing:.13em; padding:8px 12px; position:absolute; text-transform:uppercase; top:110px; }
 .petal-layer { inset:0; overflow:hidden; pointer-events:none; position:absolute; z-index:1; }.petal-layer i { animation:petal-fall var(--petal-duration) linear var(--petal-delay) infinite; background:linear-gradient(145deg,rgba(255,255,255,.9),rgba(244,183,198,.82)); border-radius:90% 15% 80% 20%; box-shadow:0 1px 3px rgba(73,45,50,.12); height:calc(var(--petal-size) * 1.45); left:var(--petal-left); opacity:0; position:absolute; top:-30px; transform-origin:50% 100%; width:var(--petal-size); }
@@ -39,7 +36,6 @@ h2 { color: var(--ink); font-size: clamp(2.25rem,5vw,4.2rem); line-height: 1.05;
 .date-line { align-items: center; display: flex; font-size: .78rem; gap: 18px; letter-spacing: .2em; text-transform: uppercase; }
 .date-line span { background: currentColor; height: 1px; width: 55px; }
 .scroll-cue { align-items: center; bottom: 20px; display: flex; flex-direction: column; position: absolute; z-index: 2; }
-@media (prefers-reduced-motion:reduce){.hero-depth-bg{transform:scale(1.055)!important;transition:none}.motion-permission{display:none}}
 .section { margin: auto; max-width: 1180px; padding: 110px 30px; }
 .intro { max-width: 830px; text-align: center; }
 .intro>p:not(.eyebrow),.section-lead { color: #74776f; font-family: Georgia,serif; font-size: 1.2rem; line-height: 1.8; }
@@ -139,12 +135,12 @@ footer>span { font-size: 2.2rem; } footer p { font-family: Georgia,serif; } foot
 }
 
 @media (max-width:600px){
-  h2{font-size:clamp(2.15rem,12vw,3.25rem)}
+  .site-shell{color:#332b2d}.site-shell h2,.site-shell h3{color:#332b2d;font-family:Montserrat,Arial,sans-serif;font-weight:600;letter-spacing:-.025em}.site-shell h2{font-size:clamp(1.85rem,9vw,2.65rem);line-height:1.15}.eyebrow{font-weight:700}.intro>p:not(.eyebrow),.section-lead,.rsvp>div>p:not(.eyebrow),.ceremony-card p:not(.eyebrow){color:#4f4949;font-family:Montserrat,Arial,sans-serif;line-height:1.65}
   .hero.has-photo{background-position:46% center}.hero-identity{margin-top:38vh}.hero h1{line-height:1.28}.hero-date{letter-spacing:.09em}
   .intro>p:not(.eyebrow),.section-lead{font-size:1rem;line-height:1.65}
   .countdown{gap:16px 0;grid-template-columns:repeat(2,1fr);margin-top:38px}.countdown div{padding:8px 12px}.countdown div:nth-child(odd){border-left:1px solid #d8d0c3}.countdown div:nth-child(even){border-right:1px solid #d8d0c3}.countdown strong{font-size:2.8rem}
   .ceremony{padding:45px 14px}.ceremony-card{padding:40px 20px}.ceremony-card h2{font-size:2.65rem}.ceremony-card .button{width:100%}.ceremony-map{height:260px}
-  .create-gift-button{width:100%}.gift-grid{gap:16px}.gift-art{height:150px}.gift-card h3{font-size:.95rem}.gift-pagination{gap:5px}.gift-pagination button{font-size:.72rem;min-height:36px;min-width:34px;padding:7px 9px}
+  .create-gift-button{width:100%}.gift-grid{gap:8px;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:28px}.gift-art{height:82px}.gift-figure{font-size:2.35rem}.gift-card:hover .gift-figure{font-size:2.35rem}.gift-card>div:last-child{padding:9px 7px}.gift-card h3{font-size:.64rem;line-height:1.3;margin-bottom:8px;min-height:42px}.gift-card strong{font-size:.65rem;margin-bottom:7px;white-space:nowrap}.gift-card .text-button{font-size:.62rem;gap:3px;padding:5px 0}.gift-card .text-button svg{height:12px;width:12px}.gift-pagination{gap:5px;margin-top:26px}.gift-pagination button{font-size:.72rem;min-height:36px;min-width:34px;padding:7px 9px}
   .rsvp{padding-left:14px;padding-right:14px}.form-card{gap:20px}.form-card .button,.message-form .button{width:100%}.forms-frame{border-width:4px;border-radius:16px;height:880px}.form-external-link{width:100%}
   input,textarea,select{font-size:16px}.messages{text-align:left}
   .modal{max-height:calc(100svh - 24px);padding:35px 20px}.modal h2{font-size:2rem}.pix-box svg{height:auto;max-width:190px;width:65vw}
@@ -154,6 +150,6 @@ footer>span { font-size: 2.2rem; } footer p { font-family: Georgia,serif; } foot
 
 @media (max-width:420px){
   .hero h1{font-size:1.55rem;letter-spacing:.07em}.hero-date{font-size:.88rem}.hero::after{height:30px}
-  .stat-grid{grid-template-columns:1fr}.gift-pagination button:first-child,.gift-pagination button:last-child{flex-basis:42%}
+  .stat-grid{grid-template-columns:1fr}.gift-pagination button:first-child,.gift-pagination button:last-child{flex-basis:42%}.gift-card h3{font-size:.6rem}.gift-card strong{font-size:.59rem}.gift-card .text-button{font-size:.57rem}
   .admin-shell aside{gap:12px}.admin-brand span{display:none}
 }
