@@ -23,7 +23,11 @@ const msal = new PublicClientApplication({
 
 let initialization;
 const initialize = () => {
-  if (!initialization) initialization = msal.initialize();
+  if (!initialization) initialization = (async () => {
+    await msal.initialize();
+    const response = await msal.handleRedirectPromise();
+    if (response?.account) msal.setActiveAccount(response.account);
+  })();
   return initialization;
 };
 
@@ -33,14 +37,15 @@ const getToken = async () => {
   await initialize();
   let account = msal.getActiveAccount() || msal.getAllAccounts()[0];
   if (!account) {
-    const response = await msal.loginPopup({ scopes, prompt: 'select_account' });
-    account = response.account;
+    await msal.loginRedirect({ scopes, prompt: 'select_account' });
+    return new Promise(() => {});
   }
   msal.setActiveAccount(account);
   try {
     return (await msal.acquireTokenSilent({ scopes, account })).accessToken;
   } catch {
-    return (await msal.acquireTokenPopup({ scopes, account })).accessToken;
+    await msal.acquireTokenRedirect({ scopes, account });
+    return new Promise(() => {});
   }
 };
 
