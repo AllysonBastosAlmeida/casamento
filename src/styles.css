@@ -189,3 +189,13 @@ footer>span { font-size: 2.2rem; } footer p { font-family: Georgia,serif; } foot
   .site-shell main .rsvp .rsvp-deadline strong,
   .site-shell main .ceremony-card p:not(.eyebrow){color:#413a3c!important;font-weight:500!important}
 }
+
+/* Parágrafos que o Safari móvel tende a afinar excessivamente. */
+@media (max-width:600px){
+  .site-shell main .intro>p:not(.eyebrow),
+  .site-shell main .gifts-section .section-lead,
+  .site-shell main .rsvp>div>p:not(.eyebrow),
+  .site-shell main .ceremony-card p:not(.eyebrow){color:#241f20!important;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;font-weight:700!important;opacity:1!important;-webkit-text-stroke:.12px currentColor}
+  .site-shell main .rsvp .rsvp-deadline{align-items:center;color:#241f20!important;display:flex;flex-wrap:wrap;font-weight:700!important;gap:6px 9px;line-height:1.45}
+  .site-shell main .rsvp .rsvp-deadline strong{color:#663744!important;font-weight:700!important;margin-left:0}
+}

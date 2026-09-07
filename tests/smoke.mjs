@@ -20,6 +20,13 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 900 }, { name: '
     if (giftPriceStyle.color !== 'rgb(120, 63, 77)' || giftPriceStyle.weight < 700) {
       throw new Error(`mobile: contraste do valor do presente inválido (${JSON.stringify(giftPriceStyle)}).`);
     }
+    const copyStyle = await page.locator('.intro > p:not(.eyebrow)').evaluate(element => {
+      const style = element.ownerDocument.defaultView.getComputedStyle(element);
+      return { color: style.color, weight: Number(style.fontWeight), opacity: style.opacity };
+    });
+    if (copyStyle.color !== 'rgb(36, 31, 32)' || copyStyle.weight < 700 || copyStyle.opacity !== '1') {
+      throw new Error(`mobile: contraste do texto descritivo inválido (${JSON.stringify(copyStyle)}).`);
+    }
   }
   await page.locator('.gift-card .text-button').first().click();
   await page.locator('.pix-box svg').waitFor();
