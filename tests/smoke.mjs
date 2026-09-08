@@ -40,7 +40,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 900 }, { name: '
       return { color: style.color, weight: Number(style.fontWeight), opacity: style.opacity };
     });
     const modalStyles = {
-      value: await readStyle(page.locator('.quota-form .pix-box > strong')),
+      value: await readStyle(page.locator('.quota-form .pix-box strong')),
       copy: await readStyle(page.locator('.modal .pix-box .text-button')),
       date: await readStyle(page.locator('.rsvp-deadline strong')),
     };
