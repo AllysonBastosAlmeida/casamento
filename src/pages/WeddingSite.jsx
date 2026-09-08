@@ -17,8 +17,8 @@ const petals = Array.from({ length: 20 }, (_, index) => ({
 const confetti = Array.from({ length: 46 }, (_, index) => ({
   id: index,
   left: (index * 47 + 9) % 100,
-  delay: (index % 12) * 0.045,
-  duration: 1.8 + (index % 7) * 0.12,
+  delay: (index % 12) * 0.08,
+  duration: 3.2 + (index % 7) * 0.2,
   drift: -90 + (index % 10) * 20,
   rotation: 180 + (index % 8) * 75,
 }));
@@ -26,7 +26,7 @@ const confetti = Array.from({ length: 46 }, (_, index) => ({
 function ConfirmationCelebration({ onClose }) {
   return <div className="confirmation-celebration" role="status" aria-live="polite">
     <div className="confetti-layer" aria-hidden="true">{confetti.map(piece => <i key={piece.id} style={{ '--confetti-left': `${piece.left}%`, '--confetti-delay': `${piece.delay}s`, '--confetti-duration': `${piece.duration}s`, '--confetti-drift': `${piece.drift}px`, '--confetti-rotation': `${piece.rotation}deg` }} />)}</div>
-    <div className="celebration-card"><span className="celebration-icon"><Check /></span><p className="eyebrow">Presença confirmada</p><h2>Que alegria ter você conosco!</h2><p>Sua resposta foi registrada. Nos vemos no nosso grande dia!</p><button type="button" className="button primary" onClick={onClose}>Continuar</button></div>
+    <div className="celebration-card"><span className="celebration-icon"><Check /></span><p className="eyebrow">Presença confirmada</p><h2>Que alegria ter você conosco!</h2><p>Sua resposta foi registrada. Nos vemos no nosso grande dia!</p><button type="button" className="button primary" onClick={onClose}>OK</button></div>
   </div>;
 }
 
@@ -67,11 +67,6 @@ function RsvpForm() {
     const companionCount = event.currentTarget.value.split('\n').filter(name => name.trim()).length;
     setAdults(Math.min(10, 1 + companionCount));
   };
-  useEffect(() => {
-    if (!celebrating) return undefined;
-    const timer = window.setTimeout(() => setCelebrating(false), 5200);
-    return () => window.clearTimeout(timer);
-  }, [celebrating]);
   const onSubmit = async (event) => {
     event.preventDefault(); setStatus('loading');
     const formElement = event.currentTarget;
