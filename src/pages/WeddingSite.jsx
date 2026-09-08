@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CalendarDays, Check, ChevronDown, CookingPot, Gift, House, MapPin, Menu, Plane, Send, Sparkles, UtensilsCrossed, WashingMachine, X } from 'lucide-react';
+import { CalendarDays, CalendarPlus, Check, ChevronDown, CookingPot, Gift, House, MapPin, Menu, Plane, Send, Sparkles, UtensilsCrossed, WashingMachine, X } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { colorPalettes, gifts, pix, wedding } from '../config.js';
 import { isDemoMode, loadGiftCatalog, loadSiteSettings, submitGift, submitMessage, submitRsvp } from '../services/weddingApi.js';
@@ -72,6 +72,17 @@ function GiftIllustration({ item }) {
   return <span className={`gift-line-art ${item.category || 'presente'}`}><Icon aria-hidden="true" /><i>{item.emoji}</i></span>;
 }
 
+function saveTheDate() {
+  const start = new Date(wedding.date);
+  const end = new Date(start.getTime() + 5 * 60 * 60 * 1000);
+  const calendarDate = date => date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  const content = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Allyson e Mayara//Casamento//PT-BR', 'BEGIN:VEVENT', `UID:casamento-allyson-mayara-${calendarDate(start)}`, `DTSTAMP:${calendarDate(new Date())}`, `DTSTART:${calendarDate(start)}`, `DTEND:${calendarDate(end)}`, `SUMMARY:Casamento Allyson & Mayara`, `LOCATION:${wedding.venue} - ${wedding.address}`, 'DESCRIPTION:Esperamos você para celebrar conosco.', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+  const url = URL.createObjectURL(new Blob([content], { type: 'text/calendar;charset=utf-8' }));
+  const link = document.createElement('a');
+  link.href = url; link.download = 'casamento-allyson-e-mayara.ics'; document.body.appendChild(link); link.click(); link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 function RsvpForm() {
   const [status, setStatus] = useState('');
   const [celebrating, setCelebrating] = useState(false);
@@ -118,6 +129,7 @@ function RsvpForm() {
 
 export default function WeddingSite() {
   const [menu, setMenu] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
   const [gift, setGift] = useState(null);
   const [customGiftOpen, setCustomGiftOpen] = useState(false);
   const [giftPage, setGiftPage] = useState(1);
@@ -162,6 +174,24 @@ export default function WeddingSite() {
     if (!gift) return;
     window.requestAnimationFrame(() => document.querySelector('.gift-modal')?.scrollTo({ top: 0 }));
   }, [gift]);
+  useEffect(() => {
+    const ids = ['home', 'cerimonia', 'presentes', 'confirmacao', 'recados'];
+    const observer = new IntersectionObserver(entries => {
+      const visible = entries.filter(entry => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (visible) setActiveSection(visible.target.id);
+    }, { rootMargin: '-25% 0px -55% 0px', threshold: [0, .15, .4] });
+    ids.forEach(id => { const section = document.getElementById(id); if (section) observer.observe(section); });
+    return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    const targets = document.querySelectorAll('.section>h2,.section>.eyebrow,.section-lead,.countdown,.ceremony-card,.ceremony-map,.gift-card,.rsvp>div,.form-card,.message-form,.wedding-divider');
+    document.documentElement.classList.add('reveal-ready');
+    targets.forEach((element, index) => { element.classList.add('reveal-item'); element.style.setProperty('--reveal-delay', `${Math.min(index % 5, 4) * 55}ms`); });
+    const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); } }), { threshold: .08, rootMargin: '0px 0px -45px' });
+    targets.forEach(element => observer.observe(element));
+    return () => { observer.disconnect(); document.documentElement.classList.remove('reveal-ready'); };
+  }, []);
   const nav = [['Home','home'],['Cerimônia','cerimonia'],['Lista de presentes','presentes'],['Confirme sua presença','confirmacao'],['Recados','recados']];
   const heroPhotoStyle = wedding.photos.hero ? { backgroundImage: `linear-gradient(180deg,rgba(31,39,32,.2),rgba(31,39,32,.58)),url(${wedding.photos.hero})` } : {};
   const chooseGift = async (event) => {
@@ -197,7 +227,7 @@ export default function WeddingSite() {
   };
   return <div className="site-shell" style={paletteStyle}>
     <a className="skip-link" href="#main-content">Ir para o conteúdo</a>
-    <header className="topbar"><a className="monogram" href="#home">{wedding.initials}</a><nav id="site-navigation" className={menu ? 'open' : ''}>{nav.map(([label,id]) => <a key={id} href={`#${id}`} onClick={() => setMenu(false)}>{label}</a>)}</nav><button type="button" className="menu-button" onClick={() => setMenu(!menu)} aria-label={menu ? 'Fechar menu' : 'Abrir menu'} aria-expanded={menu} aria-controls="site-navigation">{menu ? <X /> : <Menu />}</button></header>
+    <header className="topbar"><a className="monogram" href="#home">{wedding.initials}</a><nav id="site-navigation" className={menu ? 'open' : ''}>{nav.map(([label,id]) => <a key={id} className={activeSection === id ? 'active' : ''} aria-current={activeSection === id ? 'location' : undefined} href={`#${id}`} onClick={() => setMenu(false)}>{label}</a>)}</nav><button type="button" className="menu-button" onClick={() => setMenu(!menu)} aria-label={menu ? 'Fechar menu' : 'Abrir menu'} aria-expanded={menu} aria-controls="site-navigation">{menu ? <X /> : <Menu />}</button></header>
     <main id="main-content">
       <section id="home" className={`hero ${wedding.photos.hero ? 'has-photo' : ''}`}>
         {wedding.photos.hero && <div className="hero-photo" style={heroPhotoStyle} />}
@@ -210,7 +240,7 @@ export default function WeddingSite() {
         <a className="scroll-cue" href="#boas-vindas"><ChevronDown /></a>
       </section>
       <section id="boas-vindas" className="section intro decorated-section"><p className="eyebrow">Sejam bem-vindos</p><h2>O nosso grande dia está chegando</h2><p>Criamos este site para compartilhar cada detalhe desse momento tão especial. Esperamos celebrar o amor ao lado de vocês.</p><Countdown /><WeddingDivider /></section>
-      <section id="cerimonia" className="ceremony"><div className="ceremony-card"><FloralCorner className="floral-top" /><FloralCorner className="floral-bottom" /><CalendarDays /><p className="eyebrow">Reserve esta data</p><h2>Cerimônia & celebração</h2><strong>{wedding.dateLabel} · {wedding.timeLabel}</strong><p className="venue-details"><span className="venue-name">{wedding.venue}</span><span className="venue-address">{wedding.address}</span></p><a className="button light" href={wedding.mapUrl} target="_blank" rel="noreferrer"><MapPin size={18} /> Traçar rota</a></div><div className="ceremony-map"><iframe title={`Mapa — ${wedding.venue}`} src="https://www.google.com/maps?q=-24.0154444,-46.4027778&z=16&output=embed" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen /></div></section>
+      <section id="cerimonia" className="ceremony"><div className="ceremony-card"><FloralCorner className="floral-top" /><FloralCorner className="floral-bottom" /><CalendarDays /><p className="eyebrow">Reserve esta data</p><h2>Cerimônia & celebração</h2><strong>{wedding.dateLabel} · {wedding.timeLabel}</strong><p className="venue-details"><span className="venue-name">{wedding.venue}</span><span className="venue-address">{wedding.address}</span></p><div className="ceremony-actions"><a className="button light" href={wedding.mapUrl} target="_blank" rel="noreferrer"><MapPin size={18} /> Traçar rota</a><button type="button" className="button light save-date-button" onClick={saveTheDate}><CalendarPlus size={18} /> Salvar no calendário</button></div></div><div className="ceremony-map"><iframe title={`Mapa — ${wedding.venue}`} src="https://www.google.com/maps?q=-24.0154444,-46.4027778&z=16&output=embed" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen /></div></section>
       <section id="presentes" className="section gifts-section decorated-section"><p className="eyebrow">Um gesto de carinho</p><div className="gifts-heading"><div><h2>Lista de presentes</h2><p className="section-lead">Sua presença é o maior presente. Mas, se desejar nos presentear, escolha um presente e defina o valor da sua cota.</p></div><button type="button" className="button create-gift-button" onClick={() => setCustomGiftOpen(true)}><Gift size={19} /> Crie seu Presente</button></div><div className="gift-grid">{visibleGifts.map(item => <article className="gift-card" key={item.id}><div className="gift-art gift-figure" role="img" aria-label={item.name}><GiftIllustration item={item} /></div><div><span className="gift-suggestion">Valor sugerido</span><h3>{item.name}</h3><strong>{money.format(item.price)}</strong><button type="button" className="text-button" onClick={() => { setGift(item); setGiftAmount(item.price); setGiftReference(`${item.id}-${Date.now().toString().slice(-7)}`); }}>Escolher cota <Gift size={16} /></button></div></article>)}</div><nav className="gift-pagination" aria-label="Páginas da lista de presentes"><button type="button" aria-label="Página anterior" disabled={giftPage === 1} onClick={() => changeGiftPage(giftPage - 1)}>Anterior</button>{Array.from({ length: giftPageCount }, (_, index) => index + 1).map(page => <button type="button" key={page} className={page === giftPage ? 'active' : ''} aria-current={page === giftPage ? 'page' : undefined} onClick={() => changeGiftPage(page)}>{page}</button>)}<button type="button" aria-label="Próxima página" disabled={giftPage === giftPageCount} onClick={() => changeGiftPage(giftPage + 1)}>Próxima</button></nav><WeddingDivider /></section>
       <section id="confirmacao" className="section rsvp decorated-section"><div><p className="eyebrow">Esperamos por você</p><h2>Confirme sua presença</h2><p>Para prepararmos tudo com muito cuidado, sua confirmação será registrada diretamente em nossa lista.</p><p className="rsvp-deadline"><CalendarDays size={18} /><span>Confirme sua presença até <strong>20/10/2026</strong></span></p></div><RsvpForm /></section>
       <section id="recados" className="section messages"><p className="eyebrow">Palavras que ficam</p><h2>Deixe um recado</h2><form className="message-form" onSubmit={leaveMessage}><label className="sr-only" htmlFor="message-name">Seu nome</label><input id="message-name" required name="name" autoComplete="name" placeholder="Seu nome" /><label className="sr-only" htmlFor="message-text">Mensagem para os noivos</label><textarea id="message-text" required name="message" placeholder="Escreva sua mensagem para os noivos" /><button className="button primary" disabled={busy === 'message'}>{busy === 'message' ? 'Enviando recado...' : 'Enviar recado'} <Send size={17} /></button></form></section>
