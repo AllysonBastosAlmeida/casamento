@@ -64,10 +64,24 @@ export const deleteGift = async (id, accessToken) => {
 export const submitMessage = async (payload) =>
   (await request('createMessage', payload)) || saveLocalRecord('messages', payload);
 
-export const loadReservedGiftIds = async () => {
-  const remote = await request('giftAvailability', {});
-  if (remote) return remote.giftIds || [];
-  return (readLocal().gifts || []).map(item => item.giftId).filter(Boolean);
+export const loadGiftCatalog = async defaults => {
+  const remote = await request('giftCatalog', {});
+  const catalog = new Map(defaults.map(item => [item.id, item]));
+  (remote?.items || []).forEach(item => {
+    if (item.deleted) catalog.delete(item.id);
+    else catalog.set(item.id, { ...catalog.get(item.id), ...item });
+  });
+  return [...catalog.values()];
+};
+
+export const saveGiftDefinition = async (payload, accessToken) => {
+  const remote = await request('upsertGiftDefinition', payload, accessToken);
+  return remote?.item || payload;
+};
+
+export const deleteGiftDefinition = async (id, accessToken) => {
+  const remote = await request('deleteGiftDefinition', { id }, accessToken);
+  return remote?.item || { id, deleted: true };
 };
 
 export const loadSiteSettings = async () => {

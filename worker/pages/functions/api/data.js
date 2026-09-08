@@ -40,16 +40,15 @@ export async function onRequest(context) {
   if (request.method !== 'POST' || !ALLOWED_ORIGINS.has(origin)) return json({ error: 'Requisição não permitida.' }, 403, origin);
   try {
     const { action, payload = {} } = await request.json();
-    if (action === 'giftAvailability') {
-      const result = await env.casamento_data.prepare("SELECT payload FROM records WHERE collection = 'gifts'").all();
-      const giftIds = [...new Set(result.results.map(row => parsePayload(row.payload)?.giftId).filter(Boolean))];
-      return json({ giftIds }, 200, origin);
+    if (action === 'giftCatalog') {
+      const result = await env.casamento_data.prepare("SELECT payload FROM records WHERE collection = 'gift_catalog' ORDER BY created_at").all();
+      return json({ items: result.results.map(row => parsePayload(row.payload)).filter(Boolean) }, 200, origin);
     }
     if (action === 'settings') {
       const row = await env.casamento_data.prepare("SELECT payload FROM records WHERE id = 'site-settings' AND collection = 'settings'").first();
       return json({ settings: parsePayload(row?.payload) || { palette: 'rose' } }, 200, origin);
     }
-    const adminAction = ['dashboard', 'createGuest', 'updateGuest', 'deleteGuest', 'deleteGift', 'updateSettings'].includes(action);
+    const adminAction = ['dashboard', 'createGuest', 'updateGuest', 'deleteGuest', 'deleteGift', 'upsertGiftDefinition', 'deleteGiftDefinition', 'updateSettings'].includes(action);
     if (adminAction && !(await authorize(request))) return json({ error: 'Acesso administrativo não autorizado.' }, 401, origin);
 
     if (action === 'dashboard') {
@@ -78,6 +77,27 @@ export async function onRequest(context) {
       if (!id) return json({ error: 'Presente inválido.' }, 400, origin);
       await env.casamento_data.prepare("DELETE FROM records WHERE id = ? AND collection = 'gifts'").bind(id).run();
       return json({ id }, 200, origin);
+    }
+    if (action === 'upsertGiftDefinition') {
+      const id = String(payload.id || `custom-gift-${Date.now()}`).replace(/[^a-zA-Z0-9_-]/g, '');
+      const name = String(payload.name || '').trim();
+      const price = Number(payload.price);
+      const image = String(payload.image || '');
+      const emoji = String(payload.emoji || '🎁').slice(0, 12);
+      if (!id || !name || !Number.isFinite(price) || price <= 0) return json({ error: 'Informe nome e valor válidos.' }, 400, origin);
+      if (image.length > 900000) return json({ error: 'A imagem ficou muito grande. Escolha uma imagem menor.' }, 400, origin);
+      const record = { id, name, price, image, emoji, deleted: false };
+      await env.casamento_data.prepare("INSERT OR REPLACE INTO records (id, collection, payload, created_at) VALUES (?, 'gift_catalog', ?, ?)")
+        .bind(`catalog:${id}`, JSON.stringify(record), new Date().toISOString()).run();
+      return json({ item: record }, 200, origin);
+    }
+    if (action === 'deleteGiftDefinition') {
+      const id = String(payload.id || '').replace(/[^a-zA-Z0-9_-]/g, '');
+      if (!id) return json({ error: 'Presente inválido.' }, 400, origin);
+      const record = { id, deleted: true };
+      await env.casamento_data.prepare("INSERT OR REPLACE INTO records (id, collection, payload, created_at) VALUES (?, 'gift_catalog', ?, ?)")
+        .bind(`catalog:${id}`, JSON.stringify(record), new Date().toISOString()).run();
+      return json({ item: record }, 200, origin);
     }
     if (action === 'deleteGuest') {
       const id = String(payload.id || '');
@@ -111,12 +131,7 @@ export async function onRequest(context) {
     if (action === 'createGift' && (!payload.giftName?.trim() || !Number.isFinite(Number(payload.value)) || Number(payload.value) <= 0)) {
       return json({ error: 'Presente ou valor inválido.' }, 400, origin);
     }
-    if (action === 'createGift' && payload.giftId) {
-      const existing = await env.casamento_data.prepare("SELECT id FROM records WHERE collection = 'gifts' AND json_extract(payload, '$.giftId') = ? LIMIT 1")
-        .bind(String(payload.giftId)).first();
-      if (existing) return json({ error: 'Este presente já foi escolhido por outra pessoa.' }, 409, origin);
-    }
-    const id = action === 'createGift' && payload.giftId ? `gift:${String(payload.giftId)}` : globalThis.crypto.randomUUID();
+    const id = globalThis.crypto.randomUUID();
     const createdAt = new Date().toISOString();
     await env.casamento_data.prepare('INSERT INTO records (id, collection, payload, created_at) VALUES (?, ?, ?, ?)')
       .bind(id, collection, JSON.stringify(payload), createdAt).run();
