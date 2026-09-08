@@ -76,11 +76,14 @@ function saveTheDate() {
   const start = new Date(wedding.date);
   const end = new Date(start.getTime() + 5 * 60 * 60 * 1000);
   const calendarDate = date => date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
-  const content = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Allyson e Mayara//Casamento//PT-BR', 'BEGIN:VEVENT', `UID:casamento-allyson-mayara-${calendarDate(start)}`, `DTSTAMP:${calendarDate(new Date())}`, `DTSTART:${calendarDate(start)}`, `DTEND:${calendarDate(end)}`, `SUMMARY:Casamento Allyson & Mayara`, `LOCATION:${wedding.venue} - ${wedding.address}`, 'DESCRIPTION:Esperamos você para celebrar conosco.', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
-  const url = URL.createObjectURL(new Blob([content], { type: 'text/calendar;charset=utf-8' }));
-  const link = document.createElement('a');
-  link.href = url; link.download = 'casamento-allyson-e-mayara.ics'; document.body.appendChild(link); link.click(); link.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: 'Casamento Allyson & Mayara',
+    dates: `${calendarDate(start)}/${calendarDate(end)}`,
+    details: 'Esperamos você para celebrar conosco.',
+    location: `${wedding.venue} - ${wedding.address}`,
+  });
+  window.open(`https://calendar.google.com/calendar/render?${params}`, '_blank', 'noopener,noreferrer');
 }
 
 function RsvpForm() {
