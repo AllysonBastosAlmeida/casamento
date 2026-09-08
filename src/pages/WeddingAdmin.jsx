@@ -26,7 +26,10 @@ function GuestColumn({ title, label, guests, onToggle, onEdit, onRemove }) {
 }
 
 function ConfirmationCard({ item }) {
-  return <article className={`confirmation-card ${item.attending}`}><header><div><strong>{item.name || 'Nome não informado'}</strong><span>{formatDate(item.createdAt)}</span></div><span className={`badge ${item.attending}`}>{item.attending === 'sim' ? 'Confirmado' : 'Não irá'}</span><span className="reception-check">Entrada&nbsp; □</span></header><div className="confirmation-details"><div><span>Adultos</span><strong>{item.adults || '0'}</strong></div><div><span>Crianças acima de 5</span><strong>{item.children || '0'}</strong>{item.childrenNames && <em>{item.childrenNames}</em>}</div><div className="wide"><span>Acompanhantes adultos</span><strong>{item.companions || 'Nenhum informado'}</strong></div><div><span>WhatsApp</span><strong>{item.phone || 'Não informado'}</strong></div><div className="wide"><span>Observações</span><strong>{item.notes || 'Nenhuma observação'}</strong></div></div></article>;
+  const adults = Number(item.adults || 0);
+  const children = Number(item.children || 0);
+  const adultNames = [item.name, ...String(item.companions || '').split('\n')].map(name => name.trim()).filter(Boolean).join('\n');
+  return <article className={`confirmation-card ${item.attending}`}><header><div><strong>{item.name || 'Nome não informado'}</strong><span>{formatDate(item.createdAt)}</span></div><span className={`badge ${item.attending}`}>{item.attending === 'sim' ? 'Confirmado' : 'Não irá'}</span><span className="reception-check">Entrada&nbsp; □</span></header><div className="confirmation-details"><div className="people adults-people"><span>Adultos / acompanhantes ({adults})</span><strong>{adultNames || 'Nenhum informado'}</strong></div><div className="people children-people"><span>Crianças acima de 5 anos ({children})</span><strong>{item.childrenNames || 'Nenhuma'}</strong></div><div className="people-total"><span>Total de pessoas</span><strong>{adults + children}</strong></div><div><span>WhatsApp</span><strong>{item.phone || 'Não informado'}</strong></div><div className="notes"><span>Observações</span><strong>{item.notes || 'Nenhuma observação'}</strong></div></div></article>;
 }
 
 export default function WeddingAdmin() {
