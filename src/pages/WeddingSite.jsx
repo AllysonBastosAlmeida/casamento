@@ -204,7 +204,6 @@ export default function WeddingSite() {
         {!wedding.photos.hero && <div className="hero-photo-note">Sua foto principal será inserida aqui</div>}
         <div className="petal-layer" aria-hidden="true">{petals.map(petal => <i key={petal.id} style={{ '--petal-left': `${petal.left}%`, '--petal-delay': `${petal.delay}s`, '--petal-duration': `${petal.duration}s`, '--petal-size': `${petal.size}px`, '--petal-drift': `${petal.drift}px`, '--petal-end': `${petal.drift * -0.6}px` }} />)}</div>
         <div className="hero-identity">
-          <WeddingCrest compact />
           <h1>{wedding.couple}</h1>
           <div className="hero-date">{new Date(wedding.date).toLocaleDateString('pt-BR').replaceAll('/', '  |  ')}</div>
         </div>
