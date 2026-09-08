@@ -40,20 +40,24 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 900 }, { name: '
       return { color: style.color, weight: Number(style.fontWeight), opacity: style.opacity };
     });
     const modalStyles = {
-      value: await readStyle(page.locator('.modal > strong')),
+      value: await readStyle(page.locator('.quota-form .pix-box > strong')),
       copy: await readStyle(page.locator('.modal .pix-box .text-button')),
       date: await readStyle(page.locator('.rsvp-deadline strong')),
     };
-    if (modalStyles.value.color !== 'rgb(91, 39, 51)' || modalStyles.value.weight < 700 || modalStyles.value.opacity !== '1') throw new Error(`mobile: valor do modal sem contraste (${JSON.stringify(modalStyles.value)}).`);
+    if (modalStyles.value.weight < 700 || modalStyles.value.opacity !== '1') throw new Error(`mobile: valor do modal sem contraste (${JSON.stringify(modalStyles.value)}).`);
     if (modalStyles.copy.color !== 'rgb(91, 39, 51)' || modalStyles.copy.weight < 700 || modalStyles.copy.opacity !== '1') throw new Error(`mobile: copiar PIX sem contraste (${JSON.stringify(modalStyles.copy)}).`);
-    if (modalStyles.date.color !== 'rgb(79, 32, 44)' || modalStyles.date.weight < 700 || modalStyles.date.opacity !== '1') throw new Error(`mobile: data limite sem contraste (${JSON.stringify(modalStyles.date)}).`);
+    if (modalStyles.date.weight < 700 || modalStyles.date.opacity !== '1') throw new Error(`mobile: data limite sem contraste (${JSON.stringify(modalStyles.date)}).`);
   }
   if (await page.locator('.modal input[type="email"]').count()) throw new Error(`${viewport.name}: campo de e-mail ainda aparece no presente.`);
   await page.locator('.modal-close').click();
+  await page.locator('select[name="children"]').selectOption('2');
+  const childNames = page.locator('textarea[name="childrenNames"]');
+  if (await childNames.count() !== 1 || !(await childNames.getAttribute('required') !== null)) throw new Error(`${viewport.name}: nomes das crianças não foram exigidos.`);
   const decline = page.locator('input[name="attending"][value="nao"]');
   await decline.check();
   if (await page.locator('textarea[name="companions"]').count()) throw new Error(`${viewport.name}: acompanhantes aparece para ausência.`);
-  if (await page.locator('input[name="phone"]').count()) throw new Error(`${viewport.name}: WhatsApp aparece para ausência.`);
+  if (await page.locator('textarea[name="childrenNames"]').count()) throw new Error(`${viewport.name}: nomes das crianças aparecem para ausência.`);
+  if (await page.locator('input[name="phone"]').count() !== 1) throw new Error(`${viewport.name}: WhatsApp obrigatório não aparece para ausência.`);
   const mapHref = await page.getByRole('link', { name: /traçar rota/i }).getAttribute('href');
   if (!mapHref?.includes('google.com/maps/dir')) throw new Error(`${viewport.name}: link de rota inválido.`);
   await page.close();

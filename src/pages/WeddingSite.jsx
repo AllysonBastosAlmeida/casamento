@@ -62,6 +62,7 @@ function RsvpForm() {
   const [celebrating, setCelebrating] = useState(false);
   const [attending, setAttending] = useState('sim');
   const [adults, setAdults] = useState(1);
+  const [children, setChildren] = useState(0);
   const updateCompanions = event => {
     const companionCount = event.currentTarget.value.split('\n').filter(name => name.trim()).length;
     setAdults(Math.min(10, 1 + companionCount));
@@ -76,9 +77,13 @@ function RsvpForm() {
     const formElement = event.currentTarget;
     const form = new FormData(formElement);
     try {
+      if (attending === 'sim' && children > 0) {
+        const names = String(form.get('childrenNames') || '').split('\n').filter(name => name.trim());
+        if (names.length !== children) throw new Error(`Informe ${children === 1 ? 'o nome da criança' : `os ${children} nomes das crianças`}, um por linha.`);
+      }
       await submitRsvp(Object.fromEntries(form));
       const confirmed = attending === 'sim';
-      formElement.reset(); setAttending('sim'); setAdults(1); setStatus('success'); setCelebrating(confirmed);
+      formElement.reset(); setAttending('sim'); setAdults(1); setChildren(0); setStatus('success'); setCelebrating(confirmed);
     } catch (error) { setStatus(error.message || 'Não foi possível enviar. Tente novamente.'); }
   };
   return <><form className="form-card" onSubmit={onSubmit}>
@@ -89,9 +94,10 @@ function RsvpForm() {
     </div></fieldset>
     {attending === 'sim' && <div className="form-grid">
       <label>Adultos<select name="adults" value={adults} onChange={event => setAdults(Number(event.target.value))}>{[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n}>{n}</option>)}</select><small className="field-help">Atualizado automaticamente pelos acompanhantes.</small></label>
-      <label>Crianças acima de 5 anos<select name="children" defaultValue="0">{[0,1,2,3,4,5].map(n => <option key={n}>{n}</option>)}</select><small className="field-help">Crianças de até 5 anos não precisam ser incluídas.</small></label>
+      <label>Crianças acima de 5 anos<select name="children" value={children} onChange={event => setChildren(Number(event.target.value))}>{[0,1,2,3,4,5].map(n => <option key={n}>{n}</option>)}</select><small className="field-help">Acima de 5 anos é contabilizado como pagante.</small></label>
     </div>}
     {attending === 'sim' && <label>Nomes dos acompanhantes<textarea name="companions" placeholder="Um nome por linha" onChange={updateCompanions} /></label>}
+    {attending === 'sim' && children > 0 && <label>Nomes das crianças acima de 5 anos<textarea required name="childrenNames" placeholder="Um nome por linha" /><small className="field-help">Informe exatamente {children} {children === 1 ? 'nome' : 'nomes'}.</small></label>}
     <label>WhatsApp<input required name="phone" inputMode="tel" autoComplete="tel" placeholder="(13) 99999-9999" /><small className="field-help">Usaremos o número para manter apenas sua resposta mais recente.</small></label>
     <label>Observações<textarea name="notes" /></label>
     <button className="button primary" disabled={status === 'loading'}>{status === 'loading' ? 'Enviando...' : 'Confirmar resposta'} <Check size={18} /></button>

@@ -38,13 +38,20 @@ async function submitToMicrosoftForms(payload) {
   if (!definitionResponse.ok) throw new Error('Não foi possível carregar as perguntas do Microsoft Forms.');
   const definition = await definitionResponse.json();
   const attending = payload.attending === 'sim';
+  const childNamesQuestion = definition.questions.find(item => item.title === 'Nomes das crianças acima de 5 anos');
+  const companions = payload.companions?.trim();
+  const childrenNames = payload.childrenNames?.trim();
+  const combinedCompanions = !childNamesQuestion && childrenNames
+    ? [companions, `Crianças acima de 5 anos:\n${childrenNames}`].filter(Boolean).join('\n\n')
+    : companions;
   const answers = [
     answer(definition.questions, 'Nome Completo', payload.name?.trim()),
     answer(definition.questions, 'Presença', attending ? 'Sim, estarei' : 'Não poderei comparecer'),
     ...(attending ? [
       answer(definition.questions, 'Adultos', payload.adults || 1),
       answer(definition.questions, 'Crianças acima de 5 anos', payload.children || 0),
-      answer(definition.questions, 'Acompanhantes', payload.companions?.trim()),
+      answer(definition.questions, 'Acompanhantes', combinedCompanions),
+      answer(definition.questions, 'Nomes das crianças acima de 5 anos', childrenNames),
       answer(definition.questions, 'WhatsApp', payload.phone?.trim()),
     ] : []),
     answer(definition.questions, 'Observações', payload.notes?.trim()),
@@ -78,6 +85,8 @@ export function microsoftFormsProxy() {
           const payload = await readBody(request);
           if (!payload.name?.trim() || !payload.attending) throw new Error('Preencha os campos obrigatórios.');
           if (payload.attending === 'sim' && !payload.phone?.trim()) throw new Error('Informe o WhatsApp.');
+          if (payload.attending === 'sim' && Number(payload.children) > 0 && !payload.childrenNames?.trim()) throw new Error('Informe os nomes das crianças acima de 5 anos.');
+          if (payload.attending === 'sim' && Number(payload.children) > 0 && payload.childrenNames.trim().split('\n').filter(Boolean).length !== Number(payload.children)) throw new Error('A quantidade de nomes das crianças não corresponde ao total informado.');
           response.end(JSON.stringify(await submitToMicrosoftForms(payload)));
         } catch (error) {
           response.statusCode = 502;

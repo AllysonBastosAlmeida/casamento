@@ -120,20 +120,26 @@ export const loadExcelRsvps = async () => {
     }
     return '';
   };
-  const responses = rows.slice(1).filter(row => row.some(Boolean)).map((row, index) => ({
-    id: `excel-${value(row, 'id') || index + 1}`,
-    // O Forms usa a coluna F para "Nome Completo". O fallback por posição
-    // protege contra variações invisíveis no cabeçalho exportado pelo Excel.
-    name: value(row, 'nomecompleto', 'nome') || row[5] || row[4] || '',
-    attending: normalize(value(row, 'presenca1', 'presenca')).startsWith('sim') ? 'sim' : 'nao',
-    adults: Number(value(row, 'adultos') || 0),
-    children: Number(value(row, 'criancasacimade5anos') || 0),
-    companions: value(row, 'acompanhantes'),
-    phone: value(row, 'whatsapp'),
-    notes: value(row, 'observacoes'),
-    createdAt: value(row, 'horadaconclusao', 'horadeinicio'),
-    source: 'excel',
-  }));
+  const responses = rows.slice(1).filter(row => row.some(Boolean)).map((row, index) => {
+    const rawCompanions = String(value(row, 'acompanhantes') || '');
+    const marker = /\n*crianças acima de 5 anos:\s*\n?/i;
+    const parts = rawCompanions.split(marker);
+    return {
+      id: `excel-${value(row, 'id') || index + 1}`,
+      // O Forms usa a coluna F para "Nome Completo". O fallback por posição
+      // protege contra variações invisíveis no cabeçalho exportado pelo Excel.
+      name: value(row, 'nomecompleto', 'nome') || row[5] || row[4] || '',
+      attending: normalize(value(row, 'presenca1', 'presenca')).startsWith('sim') ? 'sim' : 'nao',
+      adults: Number(value(row, 'adultos') || 0),
+      children: Number(value(row, 'criancasacimade5anos') || 0),
+      childrenNames: value(row, 'nomesdascriancasacimade5anos') || parts[1]?.trim() || '',
+      companions: parts[0]?.trim() || '',
+      phone: value(row, 'whatsapp'),
+      notes: value(row, 'observacoes'),
+      createdAt: value(row, 'horadaconclusao', 'horadeinicio'),
+      source: 'excel',
+    };
+  });
   const latestByPhone = new Map();
   const withoutPhone = [];
   responses.forEach(response => {
