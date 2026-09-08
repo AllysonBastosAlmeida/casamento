@@ -46,6 +46,7 @@ export const initialGuests = [
 
 const giftGroups = [
   {
+    category: 'cozinha',
     items: [
       ['Jogo de panelas completo', 650, '🍲'], ['Conjunto de frigideiras', 320, '🍳'], ['Panela de pressão', 280, '🥘'],
       ['Jogo de assadeiras', 190, '🧁'], ['Caçarola de inox', 240, '🫕'], ['Kit de utensílios de cozinha', 160, '🥄'],
@@ -54,6 +55,7 @@ const giftGroups = [
     ],
   },
   {
+    category: 'eletro',
     items: [
       ['Cafeteira elétrica', 290, '☕'], ['Liquidificador', 260, '🥤'], ['Batedeira planetária', 520, '🎂'], ['Torradeira', 210, '🍞'],
       ['Air fryer', 490, '🍟'], ['Sanduicheira', 170, '🥪'], ['Mixer multifuncional', 230, '🧋'], ['Aspirador de pó', 450, '🧹'],
@@ -61,6 +63,7 @@ const giftGroups = [
     ],
   },
   {
+    category: 'mesa',
     items: [
       ['Aparelho de jantar', 420, '🍽️'], ['Jogo de taças de cristal', 310, '🥂'], ['Faqueiro completo', 360, '🍴'],
       ['Jogo de xícaras de café', 180, '☕'], ['Conjunto para sobremesa', 220, '🍰'], ['Travessas para servir', 250, '🥗'],
@@ -68,6 +71,7 @@ const giftGroups = [
     ],
   },
   {
+    category: 'casa',
     items: [
       ['Jogo de cama', 320, '🛏️'], ['Kit de toalhas de banho', 240, '🛁'], ['Edredom para o casal', 380, '🧶'],
       ['Travesseiros especiais', 210, '😴'], ['Conjunto de almofadas', 190, '🛋️'], ['Luminária para a nova casa', 260, '💡'],
@@ -76,6 +80,7 @@ const giftGroups = [
     ],
   },
   {
+    category: 'viagem',
     items: [
       ['Café da manhã na lua de mel', 180, '🥐'], ['Jantar romântico na lua de mel', 350, '💑'],
       ['Passeio especial para os noivos', 450, '🌅'], ['Diária da lua de mel', 650, '🏨'], ['Traslado da viagem', 300, '🚕'],
@@ -90,4 +95,5 @@ export const gifts = giftGroups.flatMap((group, groupIndex) => group.items.map((
   name,
   price,
   emoji,
+  category: group.category,
 })));
