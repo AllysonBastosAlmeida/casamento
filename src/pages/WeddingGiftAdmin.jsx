@@ -17,7 +17,9 @@ const prepareImage = file => new Promise((resolve, reject) => {
     const scale = Math.min(1, 640 / Math.max(image.width, image.height));
     const canvas = document.createElement('canvas');
     canvas.width = Math.round(image.width * scale); canvas.height = Math.round(image.height * scale);
-    canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+    const context = canvas.getContext('2d');
+    context.fillStyle = '#fffafa'; context.fillRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
     URL.revokeObjectURL(url);
     resolve(canvas.toDataURL('image/jpeg', .72));
   };
