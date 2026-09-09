@@ -164,6 +164,12 @@ export default function WeddingSite() {
     }).catch(() => {});
   }, []);
   useEffect(() => {
+    const section = new URLSearchParams(window.location.hash.split('?')[1] || '').get('section');
+    if (!section) return undefined;
+    const timer = window.setTimeout(() => document.getElementById(section)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 350);
+    return () => window.clearTimeout(timer);
+  }, []);
+  useEffect(() => {
     const modalOpen = Boolean(gift || customGiftOpen || menu);
     document.body.classList.toggle('overlay-open', modalOpen);
     const close = event => {

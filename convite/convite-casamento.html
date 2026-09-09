@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Convite de casamento — Allyson & Mayara</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@400;500;600&display=swap');
+    @page { size: A5 portrait; margin: 0; }
+    * { box-sizing: border-box; }
+    html, body { height: 210mm; margin: 0; width: 148mm; }
+    body { background: #fffafa; color: #4b3c40; font-family: Montserrat, Arial, sans-serif; }
+    .invitation { background: #fffafa; height: 210mm; overflow: hidden; position: relative; width: 148mm; }
+    .photo { height: 88mm; overflow: hidden; position: relative; }
+    .photo img { filter: saturate(.86) contrast(.95) brightness(.92); height: 100%; object-fit: cover; object-position: 50% 35%; width: 100%; }
+    .photo::after { background: linear-gradient(180deg,rgba(49,29,35,.05),rgba(49,29,35,.08) 58%,#fffafa 100%); content: ''; inset: 0; position: absolute; }
+    .content { align-items: center; display: flex; flex-direction: column; padding: 0 14mm; position: relative; text-align: center; z-index: 2; }
+    .floral { background: url('../public/floral-corner-watercolor.png') left top/contain no-repeat; height: 56mm; opacity: .42; pointer-events: none; position: absolute; width: 61mm; z-index: 1; }
+    .floral.top { left: -16mm; top: -10mm; }
+    .floral.bottom { bottom: -12mm; right: -17mm; transform: rotate(180deg); }
+    .eyebrow { color: #9c6f79; font-size: 7.5pt; font-weight: 600; letter-spacing: .3em; margin: -2mm 0 3mm; text-transform: uppercase; }
+    h1 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 35pt; font-weight: 400; line-height: .95; margin: 0; }
+    .ampersand { color: #b57d89; font-style: italic; }
+    .phrase { color: #6d6063; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 13pt; line-height: 1.35; margin: 3.5mm auto 3mm; max-width: 104mm; }
+    .ornament { align-items: center; color: #d7a9b2; display: flex; gap: 3mm; margin: 0 0 2.5mm; width: 52mm; }
+    .ornament::before, .ornament::after { background: currentColor; content: ''; flex: 1; height: .3mm; }
+    .ornament span { font-family: Georgia, serif; font-size: 11pt; }
+    .date { color: #753d49; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 19pt; font-weight: 500; letter-spacing: .08em; margin: 0; }
+    .details { color: #55484c; font-size: 7.5pt; line-height: 1.6; margin: 1.5mm 0 4mm; }
+    .details strong { display: block; font-size: 9pt; font-weight: 600; text-decoration: underline; text-decoration-color: #d7a9b2; text-underline-offset: 1mm; }
+    .rsvp { background: #9c6f79; border: 1px solid #9c6f79; border-radius: 20mm; color: #fff; display: inline-block; font-size: 8pt; font-weight: 600; letter-spacing: .12em; padding: 3.8mm 10mm; text-decoration: none; text-transform: uppercase; }
+    .deadline { color: #76696d; font-size: 6.7pt; margin: 2.5mm 0 0; }
+    .initials { color: #b57d89; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 8pt; letter-spacing: .22em; margin-top: 5mm; }
+  </style>
+</head>
+<body>
+  <main class="invitation">
+    <i class="floral top"></i><i class="floral bottom"></i>
+    <div class="photo"><img src="../public/foto-capa.jpg" alt="Allyson e Mayara"></div>
+    <section class="content">
+      <p class="eyebrow">Celebre conosco</p>
+      <h1>Allyson <span class="ampersand">&</span> Mayara</h1>
+      <p class="phrase">Com alegria no coração, convidamos você para celebrar o início da nossa vida juntos.</p>
+      <div class="ornament"><span>♡</span></div>
+      <p class="date">31 · 10 · 2026 &nbsp;|&nbsp; 08h</p>
+      <p class="details"><strong>Quiosque Império</strong>Av. Pres. Castelo Branco — Canto do Forte<br>Praia Grande — SP</p>
+      <a class="rsvp" href="https://allysonbastosalmeida.github.io/casamento/#/?section=confirmacao">Confirmar presença</a>
+      <p class="deadline">Por favor, confirme sua presença até 20 de outubro de 2026.</p>
+      <span class="initials">A &amp; M</span>
+    </section>
+  </main>
+</body>
+</html>
