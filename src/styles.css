@@ -74,6 +74,7 @@ h2 { color: var(--ink); font-size: clamp(2.25rem,5vw,4.2rem); line-height: 1.05;
 .gifts-section { max-width:1500px; }.gifts-heading { align-items:end; display:flex; gap:35px; justify-content:space-between; }.gifts-heading>div { max-width:980px; }.gifts-heading h2 { margin-bottom:1.25rem; }.create-gift-button { background:var(--green); border-radius:999px; color:#fff; flex:none; margin-bottom:10px; padding:15px 23px; }.create-gift-button:hover { filter:brightness(1.08); transform:translateY(-2px); }.gift-grid { display:grid; gap:18px; grid-template-columns:repeat(5,1fr); margin-top:48px; }
 .gift-card { background: #fff; box-shadow: 0 15px 50px rgba(53,58,50,.07); }
 .gift-art { align-items:center; background:var(--soft); display:flex; height:170px; justify-content:center; overflow:hidden; transition:background .35s ease; }.gift-art img { height:100%; object-fit:cover; transition:transform .4s ease; width:100%; }.gift-card:hover .gift-art img { transform:scale(1.045); }
+.gift-art-button{border:0;border-radius:0;cursor:pointer;padding:0;width:100%}.gift-art-button:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
 .gift-figure { font-size:4.5rem; text-shadow:0 8px 20px rgba(80,55,55,.12); }.gift-card:hover .gift-figure { font-size:4.8rem; }
 .gift-card>div:last-child { padding:18px; }
 .gift-card h3 { font-family:Montserrat,sans-serif; font-size:.88rem; font-weight:500; letter-spacing:-.015em; line-height:1.4; min-height:40px; }
