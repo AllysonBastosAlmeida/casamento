@@ -13,6 +13,19 @@ const formatDate = value => {
   return Number.isNaN(parsed.getTime()) ? String(value) : parsed.toLocaleString('pt-BR');
 };
 
+const mergeRsvps = (...lists) => {
+  const records = new Map();
+  lists.flat().filter(Boolean).forEach(item => {
+    const phone = String(item.phone || '').replace(/\D/g, '');
+    records.set(phone ? `phone:${phone}` : `id:${item.id}`, item);
+  });
+  return [...records.values()].sort((a, b) => {
+    const right = new Date(b.createdAt).getTime() || 0;
+    const left = new Date(a.createdAt).getTime() || 0;
+    return right - left;
+  });
+};
+
 export function Login({ onLogin }) {
   const [error, setError] = useState(false);
   const submit = event => { event.preventDefault(); const pin = new FormData(event.currentTarget).get('pin'); if (pin === (import.meta.env.VITE_ADMIN_PIN || 'casamento2027')) onLogin(); else setError(true); };
@@ -41,8 +54,8 @@ export default function WeddingAdmin() {
   const [editingGuest, setEditingGuest] = useState(null);
   const [paletteId, setPaletteId] = useState('rose');
   const [paletteStatus, setPaletteStatus] = useState('');
-  const refresh = useCallback(async () => { setLoading(true); setDashboardError(''); try { const accessToken = isDemoMode ? undefined : await getMicrosoftAccessToken(); const dashboard = await loadDashboard(accessToken); setData(current => ({ ...dashboard, rsvps: current.rsvps })); } catch (error) { setDashboardError(error.message || 'Não foi possível carregar os dados compartilhados. A lista-base continua disponível.'); } finally { setLoading(false); } }, []);
-  const syncExcel = useCallback(async () => { setLoading(true); setExcelStatus({ connected: false, error: '' }); try { const rsvps = await loadExcelRsvps(); setData(current => ({ ...current, rsvps })); setExcelStatus({ connected: true, error: '' }); } catch (error) { setExcelStatus({ connected: false, error: error.message || 'Falha ao conectar ao Excel.' }); } finally { setLoading(false); } }, []);
+  const refresh = useCallback(async () => { setLoading(true); setDashboardError(''); try { const accessToken = isDemoMode ? undefined : await getMicrosoftAccessToken(); const dashboard = await loadDashboard(accessToken); setData(current => ({ ...dashboard, rsvps: mergeRsvps(current.rsvps, dashboard.rsvps) })); } catch (error) { setDashboardError(error.message || 'Não foi possível carregar os dados compartilhados. A lista-base continua disponível.'); } finally { setLoading(false); } }, []);
+  const syncExcel = useCallback(async () => { setLoading(true); setExcelStatus({ connected: false, error: '' }); try { const rsvps = await loadExcelRsvps(); setData(current => ({ ...current, rsvps: mergeRsvps(rsvps, current.rsvps.filter(item => item.source === 'site')) })); setExcelStatus({ connected: true, error: '' }); } catch (error) { setExcelStatus({ connected: false, error: error.message || 'Falha ao conectar ao Excel.' }); } finally { setLoading(false); } }, []);
   useEffect(() => {
     if (!authenticated) return undefined;
     let active = true;

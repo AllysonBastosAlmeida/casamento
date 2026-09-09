@@ -53,7 +53,7 @@ export async function onRequest(context) {
 
     if (action === 'dashboard') {
       const result = await env.casamento_data.prepare('SELECT id, collection, payload, created_at FROM records ORDER BY created_at DESC').all();
-      const data = { gifts: [], messages: [], guests: [] };
+      const data = { rsvps: [], gifts: [], messages: [], guests: [] };
       const deletedGuestIds = new Set();
       for (const row of result.results) {
         if (row.collection === 'guest_deletions') { deletedGuestIds.add(row.id); continue; }
