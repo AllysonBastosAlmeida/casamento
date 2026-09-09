@@ -90,10 +90,24 @@ const giftGroups = [
   },
 ];
 
+const kitchenGiftImages = [
+  'jogo-panelas.jpg',
+  'conjunto-frigideiras.jpg',
+  'panela-pressao.jpg',
+  'jogo-assadeiras.jpg',
+  'cacarola-inox.jpg',
+  'utensilios-cozinha.jpg',
+  'jogo-facas.jpg',
+  'churrasqueira-casal.jpg',
+  'potes-hermeticos.jpg',
+  'cota-equipar-cozinha.jpg',
+];
+
 export const gifts = giftGroups.flatMap((group, groupIndex) => group.items.map(([name, price, emoji], itemIndex) => ({
   id: `gift-${groupIndex * 10 + itemIndex + 1}`,
   name,
   price,
   emoji,
   category: group.category,
+  image: groupIndex === 0 ? `${import.meta.env.BASE_URL}gift-images/${kitchenGiftImages[itemIndex]}` : '',
 })));
