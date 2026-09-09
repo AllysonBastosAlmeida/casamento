@@ -28,8 +28,6 @@ export const onRequest = async context => {
   try {
     await context.env.casamento_data.prepare("INSERT OR REPLACE INTO records (id, collection, payload, created_at) VALUES (?, 'rsvps', ?, ?)")
       .bind(id, JSON.stringify(record), createdAt).run();
-  } catch (error) {
-    console.error('A resposta chegou ao Forms, mas não foi espelhada no painel.', error);
-  }
+  } catch { /* A resposta no Forms continua válida mesmo se o espelhamento falhar. */ }
   return response;
 };
