@@ -129,7 +129,20 @@ const tableGiftImages = [
   'jantar-romantico.jpg',
 ];
 
-const giftImagesByGroup = [kitchenGiftImages, applianceGiftImages, tableGiftImages];
+const homeGiftImages = [
+  'jogo-cama.jpg',
+  'toalhas-banho.jpg',
+  'edredom-casal.jpg',
+  'travesseiros-especiais.jpg',
+  'conjunto-almofadas.jpg',
+  'luminaria-casa.jpg',
+  'tapete-sala.jpg',
+  'cortinas-lar.jpg',
+  'kit-organizacao.jpg',
+  'cota-decorar-casa.jpg',
+];
+
+const giftImagesByGroup = [kitchenGiftImages, applianceGiftImages, tableGiftImages, homeGiftImages];
 
 export const gifts = giftGroups.flatMap((group, groupIndex) => group.items.map(([name, price, emoji], itemIndex) => ({
   id: `gift-${groupIndex * 10 + itemIndex + 1}`,
