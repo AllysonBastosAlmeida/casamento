@@ -103,11 +103,28 @@ const kitchenGiftImages = [
   'cota-equipar-cozinha.jpg',
 ];
 
+const applianceGiftImages = [
+  'cafeteira-eletrica.jpg',
+  'liquidificador.jpg',
+  'batedeira-planetaria.jpg',
+  'torradeira.jpg',
+  'air-fryer.jpg',
+  'sanduicheira.jpg',
+  'mixer-multifuncional.jpg',
+  'aspirador-po.jpg',
+  'ferro-passar.jpg',
+  'cota-eletrodomesticos.jpg',
+];
+
+const giftImagesByGroup = [kitchenGiftImages, applianceGiftImages];
+
 export const gifts = giftGroups.flatMap((group, groupIndex) => group.items.map(([name, price, emoji], itemIndex) => ({
   id: `gift-${groupIndex * 10 + itemIndex + 1}`,
   name,
   price,
   emoji,
   category: group.category,
-  image: groupIndex === 0 ? `${import.meta.env.BASE_URL}gift-images/${kitchenGiftImages[itemIndex]}` : '',
+  image: giftImagesByGroup[groupIndex]
+    ? `${import.meta.env.BASE_URL}gift-images/${giftImagesByGroup[groupIndex][itemIndex]}`
+    : '',
 })));
