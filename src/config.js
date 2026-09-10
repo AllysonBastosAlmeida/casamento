@@ -157,7 +157,7 @@ const travelGiftImages = [
 
 const giftImagesByGroup = [kitchenGiftImages, applianceGiftImages, tableGiftImages, homeGiftImages, travelGiftImages];
 
-export const gifts = giftGroups.flatMap((group, groupIndex) => group.items.map(([name, price, emoji], itemIndex) => ({
+const standardGifts = giftGroups.flatMap((group, groupIndex) => group.items.map(([name, price, emoji], itemIndex) => ({
   id: `gift-${groupIndex * 10 + itemIndex + 1}`,
   name,
   price,
@@ -167,3 +167,27 @@ export const gifts = giftGroups.flatMap((group, groupIndex) => group.items.map((
     ? `${import.meta.env.BASE_URL}gift-images/${giftImagesByGroup[groupIndex][itemIndex]}`
     : '',
 })));
+
+const footvolleyGifts = [
+  ['gift-custom-1789048456839', 'Parar com a chapa espirrada da noiva no futevôlei', 'Parar com chapa espirrada da noiva no futevolei', 1500, 'futevolei-chapa-espirrada-noiva.jpg'],
+  ['gift-custom-1789048429494', 'Aprimorar a segunda na uva do casal no futevôlei', 'Aprimorar segunda na uva no futevolei para o casal', 310, 'futevolei-segunda-na-uva-casal.jpg'],
+  ['gift-custom-1789048268795', 'Curso de futevôlei para o casal', 'Curso de Futevolei para o casal', 380, 'futevolei-curso-casal.jpg'],
+  ['gift-custom-1789048337568', 'Melhorar a chapa da noiva no futevôlei', 'Melhorar chapa da noiva no futevolei', 280, 'futevolei-melhorar-chapa-noiva.jpg'],
+  ['gift-custom-1789048371768', 'Melhorar o pingo do noivo no futevôlei', 'Melhorar o pingo do noivo no futevolei', 290, 'futevolei-pingo-noivo.jpg'],
+  ['gift-custom-1789048488035', 'Fazer dupla com o noivo no futevôlei', 'fazer dupla no futevolei com o noivo', 250, 'futevolei-dupla-noivo.jpg'],
+  ['gift-custom-1789048478738', 'Fazer dupla com a noiva no futevôlei', 'Fazer dupla no futevolei com a noiva', 250, 'futevolei-dupla-noiva.jpg'],
+  ['gift-custom-1789048568205', 'Pedir para o noivo parar de jogar futevôlei', 'Pedir para noivo parar de jogar futevolei', 210, 'futevolei-parar-noivo.jpg'],
+  ['gift-custom-1789048558802', 'Pedir para a noiva parar de jogar futevôlei', 'Pedir para noiva parar de jogar futevolei', 210, 'futevolei-parar-noiva.jpg'],
+  ['gift-custom-1789048735038', 'Entrar no fechadinho da noiva no futevôlei', 'Entrar no fechadinho do futevolei da noiva', 350, 'futevolei-fechadinho-noiva.jpg'],
+  ['gift-custom-1789048718143', 'Entrar no fechadinho do noivo no futevôlei', 'Entrar no fechadinho do futevolei do noivo', 350, 'futevolei-fechadinho-noivo.jpg'],
+].map(([id, name, legacyName, price, image]) => ({
+  id,
+  name,
+  legacyName,
+  price,
+  emoji: '⚽',
+  category: 'futevolei',
+  image: `${import.meta.env.BASE_URL}gift-images/${image}`,
+}));
+
+export const gifts = [...standardGifts, ...footvolleyGifts];

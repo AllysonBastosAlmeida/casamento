@@ -69,7 +69,13 @@ export const loadGiftCatalog = async defaults => {
   const catalog = new Map(defaults.map(item => [item.id, item]));
   (remote?.items || []).forEach(item => {
     if (item.deleted) catalog.delete(item.id);
-    else catalog.set(item.id, { ...catalog.get(item.id), ...item });
+    else {
+      const local = catalog.get(item.id);
+      const merged = { ...local, ...item };
+      if (local?.legacyName === item.name) merged.name = local.name;
+      if (!item.image && local?.image) merged.image = local.image;
+      catalog.set(item.id, merged);
+    }
   });
   return [...catalog.values()];
 };
