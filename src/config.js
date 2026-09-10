@@ -142,7 +142,20 @@ const homeGiftImages = [
   'cota-decorar-casa.jpg',
 ];
 
-const giftImagesByGroup = [kitchenGiftImages, applianceGiftImages, tableGiftImages, homeGiftImages];
+const travelGiftImages = [
+  'cafe-lua-de-mel.jpg',
+  'jantar-lua-de-mel.jpg',
+  'passeio-noivos.jpg',
+  'diaria-lua-de-mel.jpg',
+  'traslado-viagem.jpg',
+  'ensaio-viagem.jpg',
+  'brinde-recem-casados.jpg',
+  'malas-viagem.jpg',
+  'experiencia-surpresa.jpg',
+  'cota-viagem-sonhos.jpg',
+];
+
+const giftImagesByGroup = [kitchenGiftImages, applianceGiftImages, tableGiftImages, homeGiftImages, travelGiftImages];
 
 export const gifts = giftGroups.flatMap((group, groupIndex) => group.items.map(([name, price, emoji], itemIndex) => ({
   id: `gift-${groupIndex * 10 + itemIndex + 1}`,
