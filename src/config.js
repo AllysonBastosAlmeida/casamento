@@ -190,4 +190,4 @@ const footvolleyGifts = [
   image: `${import.meta.env.BASE_URL}gift-images/${image}`,
 }));
 
-export const gifts = [...standardGifts, ...footvolleyGifts];
+export const gifts = [...footvolleyGifts, ...standardGifts];
