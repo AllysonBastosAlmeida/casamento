@@ -15,7 +15,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 900 }, { name: '
   page.on('console', message => { if (message.type() === 'error') recordBrowserError(viewport.name, message.text()); });
   await page.goto(baseUrl, { waitUntil: 'networkidle' });
   await page.locator('h1').waitFor();
-  if (await page.locator('.gift-card').count() !== 10) throw new Error(`${viewport.name}: paginação de presentes inválida.`);
+  if (await page.locator('.gift-card').count() !== (viewport.name === 'mobile' ? 9 : 10)) throw new Error(`${viewport.name}: paginação de presentes inválida.`);
   if (viewport.name === 'mobile') {
     const giftPriceStyle = await page.locator('.gift-card strong').first().evaluate(element => {
       const style = element.ownerDocument.defaultView.getComputedStyle(element);

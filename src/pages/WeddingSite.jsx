@@ -162,7 +162,16 @@ export default function WeddingSite() {
   const [paletteId, setPaletteId] = useState('rose');
   const palette = colorPalettes.find(item => item.id === paletteId) || colorPalettes[0];
   const paletteStyle = { '--green': palette.primary, '--gold': palette.accent, '--cream': palette.cream, '--soft': palette.soft, '--ink': palette.ink, '--floral-art': `url(${import.meta.env.BASE_URL}floral-corner-watercolor.png)` };
-  const giftsPerPage = 10;
+  const [giftsPerPage, setGiftsPerPage] = useState(() => window.matchMedia('(max-width: 600px)').matches ? 9 : 10);
+  useEffect(() => {
+    const mobile = window.matchMedia('(max-width: 600px)');
+    const updatePageSize = () => {
+      setGiftsPerPage(mobile.matches ? 9 : 10);
+      setGiftPage(1);
+    };
+    mobile.addEventListener('change', updatePageSize);
+    return () => mobile.removeEventListener('change', updatePageSize);
+  }, []);
   const giftPageCount = Math.max(1, Math.ceil(giftCatalog.length / giftsPerPage));
   const visibleGifts = giftCatalog.slice((giftPage - 1) * giftsPerPage, giftPage * giftsPerPage);
   const changeGiftPage = page => {
