@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { CalendarDays, CalendarPlus, Check, ChevronDown, CookingPot, Gift, House, MapPin, Menu, Plane, Send, Sparkles, UtensilsCrossed, WashingMachine, X } from 'lucide-react';
+import { ArrowUp, CalendarDays, CalendarPlus, Check, ChevronDown, CookingPot, Gift, House, MapPin, Menu, Plane, Send, Sparkles, UtensilsCrossed, WashingMachine, X } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { colorPalettes, gifts, pix, wedding } from '../config.js';
 import { isDemoMode, loadGiftCatalog, loadSiteSettings, submitGift, submitMessage, submitRsvp } from '../services/weddingApi.js';
@@ -28,6 +28,18 @@ function ConfirmationCelebration({ onClose }) {
     <div className="confetti-layer" aria-hidden="true">{confetti.map(piece => <i key={piece.id} style={{ '--confetti-left': `${piece.left}%`, '--confetti-delay': `${piece.delay}s`, '--confetti-duration': `${piece.duration}s`, '--confetti-drift': `${piece.drift}px`, '--confetti-rotation': `${piece.rotation}deg` }} />)}</div>
     <div className="celebration-card"><span className="celebration-icon"><Check /></span><p className="eyebrow">Presença confirmada</p><h2>Que alegria ter você conosco!</h2><p>Sua resposta foi registrada. Nos vemos no nosso grande dia!</p><button type="button" className="button primary" onClick={onClose}>OK</button></div>
   </div>;
+}
+
+function BackToTop() {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 300);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  if (!visible) return null;
+  return <button type="button" className="back-to-top" aria-label="Voltar ao topo" onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })}><ArrowUp size={22} aria-hidden="true" /></button>;
 }
 
 function Countdown() {
@@ -290,6 +302,7 @@ export default function WeddingSite() {
     {previewGift && <GiftImagePreview item={previewGift} onClose={() => setPreviewGift(null)} />}
     {gift && <div className="modal-backdrop" onMouseDown={() => setGift(null)}><div key={gift.id} className="modal gift-modal" role="dialog" aria-modal="true" aria-labelledby="gift-modal-title" onMouseDown={e => e.stopPropagation()}><button type="button" className="modal-close" onClick={() => setGift(null)} aria-label="Fechar janela do presente"><X /></button><div className="gift-modal-heading">{gift.image ? <button type="button" className="modal-gift-figure gift-thumbnail-button" onClick={() => setPreviewGift(gift)} aria-label={`Ampliar imagem de ${gift.name}`}><GiftIllustration item={gift} /><small>Ampliar foto</small></button> : <span className="modal-gift-figure"><GiftIllustration item={gift} /></span>}<div><p className="eyebrow">Escolha sua cota</p><h2 id="gift-modal-title">{gift.name}</h2></div></div><form className="quota-form" onSubmit={chooseGift}><label>Valor da sua cota *<div className="money-input"><span>R$</span><input required name="value" type="number" min="1" step="0.01" inputMode="decimal" value={giftAmount} onChange={event => setGiftAmount(Number(event.target.value))} /></div></label>{giftAmount > 0 && <div className="pix-box"><QRCodeSVG value={pixPayload} size={160} level="M" aria-label={`QR Code PIX no valor de ${money.format(giftAmount)}`} /><div><strong>{money.format(giftAmount)}</strong><p>Escaneie pelo aplicativo do seu banco</p><button type="button" className="text-button" onClick={() => { navigator.clipboard.writeText(pixPayload); setNotice('Código PIX copiado!'); }}>Copiar código PIX</button></div></div>}<label>Nome de quem está presenteando *<input required name="name" autoComplete="name" placeholder="Digite seu nome completo" /></label><label>Mensagem (opcional)<textarea name="message" placeholder="Uma mensagem para os noivos" /></label><button className="button primary" disabled={busy === 'gift'}>{busy === 'gift' ? 'Registrando cota...' : 'Já fiz o PIX'}</button></form><small>Ao alterar a cota, o QR Code é atualizado automaticamente.</small></div></div>}
     {customGiftOpen && <div className="modal-backdrop" onMouseDown={() => setCustomGiftOpen(false)}><div className="modal custom-gift-modal" role="dialog" aria-modal="true" aria-labelledby="custom-gift-title" onMouseDown={event => event.stopPropagation()}><button type="button" className="modal-close" onClick={() => setCustomGiftOpen(false)} aria-label="Fechar janela de presente personalizado"><X /></button><span className="modal-gift-figure">🎁</span><p className="eyebrow">Presente personalizado</p><h2 id="custom-gift-title">Crie seu presente</h2><p>Escolha como deseja nos presentear e informe o valor do seu carinho.</p><form onSubmit={createCustomGift}><label>Nome do presente *<input required name="name" maxLength="80" placeholder="Ex.: Um jantar especial" /></label><label>Valor do presente *<div className="money-input"><span>R$</span><input required name="price" type="number" min="1" step="0.01" inputMode="decimal" placeholder="0,00" /></div></label><button className="button primary">Gerar PIX deste presente</button></form></div></div>}
+    <BackToTop />
     {notice && <div className="toast" role="status" aria-live="polite"><span className="toast-icon"><Check /></span><div><strong>Allyson & Mayara</strong><p>{notice}</p></div><button type="button" onClick={() => setNotice('')} aria-label="Fechar aviso"><X /></button><i className="toast-progress" aria-hidden="true" /></div>}
   </div>;
 }
