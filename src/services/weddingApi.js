@@ -104,10 +104,11 @@ export const saveSiteSettings = async (payload, accessToken) => {
 
 export const loadDashboard = async accessToken => {
   const local = readLocal();
+  if (local.rsvps?.length) { local.rsvps = []; writeLocal(local); }
   const remote = await request('dashboard', {}, accessToken);
   const data = remote?.data || local;
   return {
-    rsvps: data.rsvps || [],
+    rsvps: [],
     gifts: data.gifts || [],
     messages: data.messages || [],
     guests: data.guests?.length ? data.guests : initialGuests,

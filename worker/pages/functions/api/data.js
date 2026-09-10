@@ -52,7 +52,7 @@ export async function onRequest(context) {
     if (adminAction && !(await authorize(request))) return json({ error: 'Acesso administrativo não autorizado.' }, 401, origin);
 
     if (action === 'dashboard') {
-      const result = await env.casamento_data.prepare('SELECT id, collection, payload, created_at FROM records ORDER BY created_at DESC').all();
+      const result = await env.casamento_data.prepare("SELECT id, collection, payload, created_at FROM records WHERE collection != 'rsvps' ORDER BY created_at DESC").all();
       const data = { rsvps: [], gifts: [], messages: [], guests: [] };
       const deletedGuestIds = new Set();
       for (const row of result.results) {
