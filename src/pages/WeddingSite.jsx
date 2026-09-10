@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CalendarDays, CalendarPlus, Check, ChevronDown, CookingPot, Gift, House, MapPin, Menu, Plane, Send, Sparkles, UtensilsCrossed, WashingMachine, X } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { colorPalettes, gifts, pix, wedding } from '../config.js';
@@ -63,6 +63,23 @@ function WeddingCrest({ compact = false }) {
 
 function WeddingDivider() {
   return <div className="wedding-divider" aria-hidden="true"><i /><Sparkles /><span>A & M</span><Sparkles /><i /></div>;
+}
+
+function GiftImagePreview({ item, onClose }) {
+  const dialogRef = useRef(null);
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    dialog.showModal();
+    return () => dialog.close();
+  }, []);
+  return <dialog ref={dialogRef} className="gift-image-preview" aria-labelledby="gift-image-title" onCancel={event => { event.preventDefault(); onClose(); }} onClick={event => { if (event.target === event.currentTarget) onClose(); }}>
+    <div className="gift-image-content">
+      <button type="button" className="modal-close" onClick={onClose} aria-label="Fechar imagem ampliada" autoFocus><X /></button>
+      <img src={item.image} alt={item.name} />
+      <h2 id="gift-image-title">{item.name}</h2>
+      <button type="button" className="button primary" onClick={onClose}>Voltar ao presente</button>
+    </div>
+  </dialog>;
 }
 
 function GiftIllustration({ item }) {
@@ -134,6 +151,7 @@ export default function WeddingSite() {
   const [menu, setMenu] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [gift, setGift] = useState(null);
+  const [previewGift, setPreviewGift] = useState(null);
   const [customGiftOpen, setCustomGiftOpen] = useState(false);
   const [giftPage, setGiftPage] = useState(1);
   const [notice, setNotice] = useState('');
@@ -175,15 +193,15 @@ export default function WeddingSite() {
     return () => window.clearTimeout(timer);
   }, []);
   useEffect(() => {
-    const modalOpen = Boolean(gift || customGiftOpen || menu);
+    const modalOpen = Boolean(gift || previewGift || customGiftOpen || menu);
     document.body.classList.toggle('overlay-open', modalOpen);
     const close = event => {
-      if (event.key !== 'Escape') return;
+      if (event.key !== 'Escape' || previewGift) return;
       setGift(null); setCustomGiftOpen(false); setMenu(false);
     };
     document.addEventListener('keydown', close);
     return () => { document.body.classList.remove('overlay-open'); document.removeEventListener('keydown', close); };
-  }, [gift, customGiftOpen, menu]);
+  }, [gift, previewGift, customGiftOpen, menu]);
   useEffect(() => {
     if (!gift) return;
     window.requestAnimationFrame(() => document.querySelector('.gift-modal')?.scrollTo({ top: 0 }));
@@ -260,7 +278,8 @@ export default function WeddingSite() {
       <section id="recados" className="section messages"><p className="eyebrow">Palavras que ficam</p><h2>Deixe um recado</h2><form className="message-form" onSubmit={leaveMessage}><label className="sr-only" htmlFor="message-name">Seu nome</label><input id="message-name" required name="name" autoComplete="name" placeholder="Seu nome" /><label className="sr-only" htmlFor="message-text">Mensagem para os noivos</label><textarea id="message-text" required name="message" placeholder="Escreva sua mensagem para os noivos" /><button className="button primary" disabled={busy === 'message'}>{busy === 'message' ? 'Enviando recado...' : 'Enviar recado'} <Send size={17} /></button></form></section>
     </main>
     <footer><WeddingCrest /><p>O amor nos trouxe até aqui. Esperamos você para celebrar conosco.</p><a href="#/admin">Área dos noivos</a>{isDemoMode && <small>Modo demonstração</small>}<small className="developer-credit">Desenvolvido por Allyson Bastos</small></footer>
-    {gift && <div className="modal-backdrop" onMouseDown={() => setGift(null)}><div key={gift.id} className="modal gift-modal" role="dialog" aria-modal="true" aria-labelledby="gift-modal-title" onMouseDown={e => e.stopPropagation()}><button type="button" className="modal-close" onClick={() => setGift(null)} aria-label="Fechar janela do presente"><X /></button><div className="gift-modal-heading"><span className="modal-gift-figure"><GiftIllustration item={gift} /></span><div><p className="eyebrow">Escolha sua cota</p><h2 id="gift-modal-title">{gift.name}</h2></div></div><form className="quota-form" onSubmit={chooseGift}><label>Valor da sua cota *<div className="money-input"><span>R$</span><input required name="value" type="number" min="1" step="0.01" inputMode="decimal" value={giftAmount} onChange={event => setGiftAmount(Number(event.target.value))} /></div></label>{giftAmount > 0 && <div className="pix-box"><QRCodeSVG value={pixPayload} size={160} level="M" aria-label={`QR Code PIX no valor de ${money.format(giftAmount)}`} /><div><strong>{money.format(giftAmount)}</strong><p>Escaneie pelo aplicativo do seu banco</p><button type="button" className="text-button" onClick={() => { navigator.clipboard.writeText(pixPayload); setNotice('Código PIX copiado!'); }}>Copiar código PIX</button></div></div>}<label>Nome de quem está presenteando *<input required name="name" autoComplete="name" placeholder="Digite seu nome completo" /></label><label>Mensagem (opcional)<textarea name="message" placeholder="Uma mensagem para os noivos" /></label><button className="button primary" disabled={busy === 'gift'}>{busy === 'gift' ? 'Registrando cota...' : 'Já fiz o PIX'}</button></form><small>Ao alterar a cota, o QR Code é atualizado automaticamente.</small></div></div>}
+    {previewGift && <GiftImagePreview item={previewGift} onClose={() => setPreviewGift(null)} />}
+    {gift && <div className="modal-backdrop" onMouseDown={() => setGift(null)}><div key={gift.id} className="modal gift-modal" role="dialog" aria-modal="true" aria-labelledby="gift-modal-title" onMouseDown={e => e.stopPropagation()}><button type="button" className="modal-close" onClick={() => setGift(null)} aria-label="Fechar janela do presente"><X /></button><div className="gift-modal-heading">{gift.image ? <button type="button" className="modal-gift-figure gift-thumbnail-button" onClick={() => setPreviewGift(gift)} aria-label={`Ampliar imagem de ${gift.name}`}><GiftIllustration item={gift} /><small>Ampliar foto</small></button> : <span className="modal-gift-figure"><GiftIllustration item={gift} /></span>}<div><p className="eyebrow">Escolha sua cota</p><h2 id="gift-modal-title">{gift.name}</h2></div></div><form className="quota-form" onSubmit={chooseGift}><label>Valor da sua cota *<div className="money-input"><span>R$</span><input required name="value" type="number" min="1" step="0.01" inputMode="decimal" value={giftAmount} onChange={event => setGiftAmount(Number(event.target.value))} /></div></label>{giftAmount > 0 && <div className="pix-box"><QRCodeSVG value={pixPayload} size={160} level="M" aria-label={`QR Code PIX no valor de ${money.format(giftAmount)}`} /><div><strong>{money.format(giftAmount)}</strong><p>Escaneie pelo aplicativo do seu banco</p><button type="button" className="text-button" onClick={() => { navigator.clipboard.writeText(pixPayload); setNotice('Código PIX copiado!'); }}>Copiar código PIX</button></div></div>}<label>Nome de quem está presenteando *<input required name="name" autoComplete="name" placeholder="Digite seu nome completo" /></label><label>Mensagem (opcional)<textarea name="message" placeholder="Uma mensagem para os noivos" /></label><button className="button primary" disabled={busy === 'gift'}>{busy === 'gift' ? 'Registrando cota...' : 'Já fiz o PIX'}</button></form><small>Ao alterar a cota, o QR Code é atualizado automaticamente.</small></div></div>}
     {customGiftOpen && <div className="modal-backdrop" onMouseDown={() => setCustomGiftOpen(false)}><div className="modal custom-gift-modal" role="dialog" aria-modal="true" aria-labelledby="custom-gift-title" onMouseDown={event => event.stopPropagation()}><button type="button" className="modal-close" onClick={() => setCustomGiftOpen(false)} aria-label="Fechar janela de presente personalizado"><X /></button><span className="modal-gift-figure">🎁</span><p className="eyebrow">Presente personalizado</p><h2 id="custom-gift-title">Crie seu presente</h2><p>Escolha como deseja nos presentear e informe o valor do seu carinho.</p><form onSubmit={createCustomGift}><label>Nome do presente *<input required name="name" maxLength="80" autoFocus placeholder="Ex.: Um jantar especial" /></label><label>Valor do presente *<div className="money-input"><span>R$</span><input required name="price" type="number" min="1" step="0.01" inputMode="decimal" placeholder="0,00" /></div></label><button className="button primary">Gerar PIX deste presente</button></form></div></div>}
     {notice && <div className="toast" role="status" aria-live="polite"><span className="toast-icon"><Check /></span><div><strong>Allyson & Mayara</strong><p>{notice}</p></div><button type="button" onClick={() => setNotice('')} aria-label="Fechar aviso"><X /></button><i className="toast-progress" aria-hidden="true" /></div>}
   </div>;
